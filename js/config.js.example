@@ -1,0 +1,4 @@
+// config.js — satoshi-note-web
+// Set DEFAULT_SERVER to your satoshi-note backend URL (no trailing slash).
+// Leave as empty string to require users to configure it via Settings.
+window.SATOSHI_NOTE_DEFAULT_SERVER = '';

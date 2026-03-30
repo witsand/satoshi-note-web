@@ -1,0 +1,8 @@
+{
+  "cleanUrls": false,
+  "directoryListing": false,
+  "rewrites": [
+    { "source": "/", "destination": "/index.html" },
+    { "source": "/redeem", "destination": "/redeem.html" }
+  ]
+}
