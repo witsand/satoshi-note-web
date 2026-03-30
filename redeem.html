@@ -104,6 +104,18 @@
   const lnurl = rawLnurl.match(/LNURL1[A-Z02-9]+/i)?.[0]?.toUpperCase() || rawLnurl;
   const main = document.getElementById('redeem-main');
 
+  // ── Apply site name from config.js ───────────────────────────────────────
+  (function () {
+    const cfgName = (window.SATOSHI_NOTE_SITE_NAME || '').trim();
+    if (!cfgName) return;
+    const words = cfgName.split(/(?=[A-Z])/).filter(w => w.length > 0);
+    const siteName = words.join(' ');
+    const logoInner = words.map((w, i) => i % 2 === 0 ? w : '<span>' + w + '</span>').join('');
+    document.title = 'Claim Your Voucher \u2014 ' + siteName;
+    const logoEl = document.getElementById('app-logo');
+    if (logoEl) logoEl.innerHTML = '\u26A1 ' + logoInner;
+  })();
+
   // ── Unified "Learn More" info card (accordion) ───────────────────────────
   function buildInfoCard(openDefault) {
     const blinkOpen  = openDefault === 'wallet' ? ' open' : '';
