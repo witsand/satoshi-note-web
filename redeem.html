@@ -12,7 +12,7 @@
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/css/style.css?v=61">
+  <link rel="stylesheet" href="/css/style.css?v=64">
   <style>
     .section-label {
       font-size: 0.7rem;
@@ -60,7 +60,7 @@
     <p style="font-size:0.82rem;color:var(--orange);font-weight:700;margin-bottom:4px;">How do I claim them?</p>
     <ol style="font-size:0.82rem;color:var(--text-muted);line-height:1.8;margin:0 0 14px 16px;padding:0;">
       <li><strong style="color:var(--text);">Get a Bitcoin wallet</strong> — download Blink (recommended for beginners) from the App Store or Play Store.</li>
-      <li><strong style="color:var(--text);">Tap "Reveal Secret"</strong> on this page to show the QR code.</li>
+      <li><strong style="color:var(--text);">Tap "Show Voucher"</strong> on this page to show the QR code.</li>
       <li><strong style="color:var(--text);">Scan or tap the QR code</strong> in your wallet app to receive the sats.</li>
     </ol>
     <p style="font-size:0.82rem;color:var(--orange);font-weight:700;margin-bottom:4px;">What can I do with them?</p>
@@ -93,7 +93,7 @@
 
 <script src="/js/config.js"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/js/wallet-picker.js?v=61"></script>
+<script src="/js/wallet-picker.js?v=64"></script>
 <script>
 (function () {
   'use strict';
@@ -554,7 +554,7 @@
             <div id="redeem-celebration" style="font-size:1rem;font-weight:700;color:var(--text);margin:14px 0 20px;">${cel.emoji} You've received a Bitcoin voucher!</div>
 
             <!-- Big reveal button -->
-            <button id="btn-reveal-secret" class="btn btn-primary" style="width:100%;font-size:1rem;font-weight:800;padding:14px 0;letter-spacing:1px;">REVEAL SECRET</button>
+            <button id="btn-reveal-secret" class="btn btn-primary" style="width:100%;font-size:1rem;font-weight:800;padding:14px 0;letter-spacing:1px;">SHOW VOUCHER</button>
             <div style="text-align:center;margin-top:10px;font-size:0.7rem;color:var(--text-muted);opacity:0.65;">${_serverHost}</div>
           </div>
 
@@ -674,7 +674,7 @@
       } catch { /* silently ignore */ }
     })();
 
-    // ── Poll for redemption — starts when REVEAL SECRET is tapped ────────
+    // ── Poll for redemption — starts when SHOW VOUCHER is tapped ────────
     function startRedemptionPoll() {
       return setInterval(async function () {
         try {

@@ -16,7 +16,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="theme-color" content="#F7931A">
-  <link rel="stylesheet" href="/css/style.css?v=61">
+  <link rel="stylesheet" href="/css/style.css?v=64">
 </head>
 <body>
 
@@ -571,6 +571,11 @@
 
     <!-- Panel A: Wallet transfer -->
     <div id="fhm-wallet-panel">
+      <div id="fhm-server-info" class="hidden" style="background:var(--surface-2);border-radius:8px;padding:10px 12px;margin-bottom:14px;font-size:0.85rem;">
+        <div style="color:var(--text-muted);margin-bottom:2px;">Local voucher from</div>
+        <div id="fhm-server-name" style="color:var(--text);font-weight:600;word-break:break-all;margin-bottom:4px;"></div>
+        <div style="color:var(--text-muted);">Balance: <span id="fhm-server-balance" style="color:var(--text);font-weight:600;"></span> sats</div>
+      </div>
       <div style="display:flex;align-items:center;gap:8px;margin-bottom:16px;">
         <div id="fhm-amount-pills" class="pill-group" style="margin:0;flex:1;justify-content:flex-start;flex-wrap:wrap;"></div>
         <button id="fhm-btn-max" class="btn btn-secondary btn-sm" style="white-space:nowrap;flex-shrink:0;">Max</button>
@@ -621,10 +626,10 @@
 
 <!-- ── Print area ─────────────────────────────────────────────────────────────── -->
 <div id="print-area" style="display:none;"></div>
-<script src="/js/config.js?v=61"></script>
+<script src="/js/config.js?v=64"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/js/wallet-picker.js?v=61"></script>
-<script src="/js/app.js?v=61"></script>
+<script src="/js/wallet-picker.js?v=64"></script>
+<script src="/js/app.js?v=64"></script>
 <script>
 (function () {
   'use strict';

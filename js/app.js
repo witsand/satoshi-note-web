@@ -599,9 +599,9 @@ function qrToDataURL(text, size) {
 async function copyToClipboard(text, btn) {
   try {
     await navigator.clipboard.writeText(text);
-    const orig = btn.textContent;
+    const origHTML = btn.innerHTML;
     btn.textContent = 'Copied!';
-    setTimeout(() => { btn.textContent = orig; }, 1500);
+    setTimeout(() => { btn.innerHTML = origHTML; }, 1500);
   } catch {
     prompt('Copy this:', text);
   }
@@ -1489,16 +1489,40 @@ async function openFundHistoryModal(entry) {
   lnurlEl.onclick = () => copyToClipboard(lnurl, lnurlEl);
   attachWalletButton(lnurlEl, lnurl);
 
-  // Button wiring
-  $('fhm-btn-lightning-instead').onclick = () => showLightningPanel(true);
-  $('fhm-btn-local-instead').onclick = () => showWalletPanel();
-
   errEl.classList.remove('visible');
   amtEl.value = '';
 
-  // Check wallet balance
-  const balanceMsat = entry.type === 'single' ? await refreshWalletBalance() : 0;
   await _configReady;
+
+  // Determine which server this voucher belongs to
+  let voucherOrigin;
+  try { voucherOrigin = new URL(voucher.fund_url_prefix).origin; } catch { voucherOrigin = new URL(_serverURL).origin; }
+
+  // Find a local wallet voucher specifically for this voucher's server
+  const localWv = getWalletVouchers()[voucherOrigin] || null;
+
+  if (!localWv) {
+    // No local wallet voucher for this server — Lightning only
+    showLightningPanel(false);
+    modal.classList.remove('hidden');
+    return;
+  }
+
+  // Fetch balance for the matching local wallet voucher
+  const balanceMsat = await fetchWalletVoucherBalance(localWv);
+
+  // Is this the same server the user is currently connected to?
+  const isSameServer = voucherOrigin === new URL(_serverURL).origin;
+
+  // Show cross-server info banner when the wallet is from a different server
+  const serverInfoEl = $('fhm-server-info');
+  if (!isSameServer && balanceMsat >= _minFundAmountMsat) {
+    $('fhm-server-name').textContent = voucherOrigin;
+    $('fhm-server-balance').textContent = Math.floor(balanceMsat / 1000).toLocaleString();
+    serverInfoEl.classList.remove('hidden');
+  } else {
+    serverInfoEl.classList.add('hidden');
+  }
 
   if (balanceMsat >= _minFundAmountMsat) {
     const balSats = Math.floor(balanceMsat / 1000);
@@ -1511,13 +1535,16 @@ async function openFundHistoryModal(entry) {
       pill.type = 'button';
       pill.className = 'pill-btn pill-btn-recent';
       pill.textContent = amt.toLocaleString();
-      pill.addEventListener('click', () => { amtEl.value = amt; doHistoryTransfer(voucher, amtEl, errEl); });
+      pill.addEventListener('click', () => { amtEl.value = amt; doHistoryTransfer(voucher, amtEl, errEl, localWv, voucherOrigin, isSameServer); });
       pillEl.appendChild(pill);
     });
 
-    $('fhm-btn-max').onclick = () => { amtEl.value = balSats; doHistoryTransfer(voucher, amtEl, errEl); };
-    $('fhm-btn-transfer').onclick = () => doHistoryTransfer(voucher, amtEl, errEl);
-    amtEl.onkeydown = e => { if (e.key === 'Enter') doHistoryTransfer(voucher, amtEl, errEl); };
+    $('fhm-btn-max').onclick = () => { amtEl.value = balSats; doHistoryTransfer(voucher, amtEl, errEl, localWv, voucherOrigin, isSameServer); };
+    $('fhm-btn-transfer').onclick = () => doHistoryTransfer(voucher, amtEl, errEl, localWv, voucherOrigin, isSameServer);
+    amtEl.onkeydown = e => { if (e.key === 'Enter') doHistoryTransfer(voucher, amtEl, errEl, localWv, voucherOrigin, isSameServer); };
+
+    $('fhm-btn-lightning-instead').onclick = () => showLightningPanel(true);
+    $('fhm-btn-local-instead').onclick = () => showWalletPanel();
 
     showWalletPanel();
   } else {
@@ -1527,9 +1554,10 @@ async function openFundHistoryModal(entry) {
   modal.classList.remove('hidden');
 }
 
-async function doHistoryTransfer(voucher, amtEl, errEl) {
-  const wv = getWalletVoucher();
+async function doHistoryTransfer(voucher, amtEl, errEl, wv, transferOrigin, isSameServer) {
+  if (!wv) wv = getWalletVoucher();
   if (!wv) return;
+  if (!transferOrigin) transferOrigin = _serverURL;
 
   errEl.classList.remove('visible');
 
@@ -1545,12 +1573,12 @@ async function doHistoryTransfer(voucher, amtEl, errEl) {
   btn.textContent = 'Funding…';
 
   try {
-    const res = await fetch(`${_serverURL}/transfer/${wv.secret}/${voucher.pubkey}?amount=${amountSats * 1000}`);
+    const res = await fetch(`${transferOrigin}/transfer/${wv.secret}/${voucher.pubkey}?amount=${amountSats * 1000}`);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || `Transfer failed (${res.status})`);
     }
-    await refreshWalletBalance();
+    if (isSameServer !== false) await refreshWalletBalance();
     saveWalletAmount(amountSats);
     $('fund-history-modal').classList.add('hidden');
     // Refresh status and re-render open history sections
@@ -1928,6 +1956,22 @@ async function refreshWalletBalance() {
       startWalletCountdown(data.expires_at || 0);
     }
     return _walletRawBalanceMsat;
+  } catch { return 0; }
+}
+
+// Fetch balance for any wallet voucher (not tied to the currently active server).
+async function fetchWalletVoucherBalance(wv) {
+  let wvOrigin;
+  try { wvOrigin = new URL(wv.fund_url_prefix).origin; } catch { return 0; }
+  try {
+    const res = await fetch(`${wvOrigin}/status`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pubkeys: [wv.pubkey] }),
+    });
+    if (!res.ok) return 0;
+    const data = (await res.json())[wv.pubkey];
+    if (!data || !data.active) { removeWalletVoucher(wvOrigin); return 0; }
+    return data.raw_balance_msat || 0;
   } catch { return 0; }
 }
 
