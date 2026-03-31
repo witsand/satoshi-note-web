@@ -270,8 +270,8 @@ function _buildSiteLogoInner(name) {
 
 let _siteName = 'Satoshi Note';
 let _siteLogoInner = 'Satoshi<span>Note</span>';
-let _githubURL = '';
-let _donateLNURL = '';
+let _githubURL = window.SATOSHI_NOTE_GITHUB_URL || '';
+let _donateLNURL = window.SATOSHI_NOTE_DONATE_LNURL || '';
 let _defaultDialCode = (window.DEFAULT_DIAL_CODE ? '+' + window.DEFAULT_DIAL_CODE : '+27');
 const _configReady = (async () => {
   try {
@@ -289,8 +289,6 @@ const _configReady = (async () => {
       if (typeof d.min_fund_amount_msat === 'number') _minFundAmountMsat = d.min_fund_amount_msat;
       if (d.site_name)       _siteName = d.site_name;
       if (d.site_logo_inner) _siteLogoInner = d.site_logo_inner;
-      if (d.github_url)      _githubURL = d.github_url;
-      if (d.donate_lnurl)    _donateLNURL = d.donate_lnurl;
     }
   } catch (_) {}
 })();
@@ -747,11 +745,6 @@ function initSingleStep1() {
     });
   });
 
-  const createBtn = $('btn-create-single');
-  const noteInput = $('voucher-note');
-  noteInput.addEventListener('input', () => {
-    createBtn.disabled = noteInput.value.trim().length < 3;
-  });
 }
 
 async function handleCreateSingle() {
@@ -760,11 +753,6 @@ async function handleCreateSingle() {
   errEl.classList.remove('visible');
 
   const note = ($('voucher-note') && $('voucher-note').value.trim()) || '';
-  if (note.length < 3) {
-    errEl.textContent = 'Please add a note (at least 3 characters).';
-    errEl.classList.add('visible');
-    return;
-  }
 
   const refundCode = localStorage.getItem(LS_REFUND) || '';
 
@@ -828,14 +816,9 @@ function renderFundStep(voucher) {
   container.title = 'Tap to open in wallet';
   container.onclick = () => { window.location.href = 'lightning:' + voucher.fund_lnurl; };
 
-  // Copy code button
+  $('single-open-wallet-btn').onclick = () => { window.location.href = 'lightning:' + voucher.fund_lnurl; };
   const lnurlEl = $('single-lnurl-text');
-  lnurlEl.textContent = 'Copy Funding Code';
-  lnurlEl.title = 'Tap to copy';
   lnurlEl.onclick = () => copyToClipboard(voucher.fund_lnurl, lnurlEl);
-
-  // Wallet open button
-  attachWalletButton(lnurlEl, voucher.fund_lnurl);
 
   // Save to history now (balance is 0 but LNURLs are ready; phone added in step 3)
   const histEntry = {
@@ -978,7 +961,6 @@ function resetSingleWizard() {
   stopFundingPoll();
   if ($('phone-number')) $('phone-number').value = '';
   if ($('voucher-note')) $('voucher-note').value = '';
-  $('btn-create-single').disabled = true;
   $('single-step1-error').classList.remove('visible');
   $('single-qr-container').innerHTML = '';
   $('single-lnurl-text').textContent = '';
@@ -1483,11 +1465,9 @@ async function openFundHistoryModal(entry) {
   renderQR(qrContainer, lnurl, 220);
   qrContainer.style.cursor = 'pointer';
   qrContainer.onclick = () => { window.location.href = 'lightning:' + lnurl; };
+  $('fhm-open-wallet-btn').onclick = () => { window.location.href = 'lightning:' + lnurl; };
   const lnurlEl = $('fhm-lnurl-text');
-  lnurlEl.textContent = 'Copy Funding Code';
-  lnurlEl.title = 'Tap to copy';
   lnurlEl.onclick = () => copyToClipboard(lnurl, lnurlEl);
-  attachWalletButton(lnurlEl, lnurl);
 
   errEl.classList.remove('visible');
   amtEl.value = '';
@@ -2070,11 +2050,9 @@ async function renderSettingsWalletSection() {
     renderQR(qrEl, fundLNURL, 256);
     qrEl.onclick = () => { window.location.href = 'lightning:' + fundLNURL; };
 
+    $('settings-wallet-open-btn').onclick = () => { window.location.href = 'lightning:' + fundLNURL; };
     const lnurlEl = $('settings-wallet-lnurl');
-    lnurlEl.textContent = 'Copy Funding Code';
-    lnurlEl.title = 'Tap to copy';
     lnurlEl.onclick = () => copyToClipboard(fundLNURL, lnurlEl);
-    attachWalletButton(lnurlEl, fundLNURL);
   }
 
   // Render wallet vouchers from other servers.

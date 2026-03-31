@@ -2,6 +2,8 @@
 
 Satoshi Note is a web-based PWA for creating and sharing Bitcoin Lightning vouchers. You fund a voucher with sats via Lightning, and a shareable claim link is generated that you can send to anyone — no wallet required on the recipient's end. Unclaimed sats automatically return to your Lightning address when the voucher expires, so nothing is lost if the link goes unclaimed.
 
+You can run your own voucher server or connect to the default one to try it out. There is no affiliation between the voucher servers and the developers of this app. **This software is experimental — do not use it with more bitcoin than you can afford to lose.**
+
 ## Tips
 
 ### Crawlers

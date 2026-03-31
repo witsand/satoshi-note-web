@@ -16,7 +16,7 @@
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="theme-color" content="#F7931A">
-  <link rel="stylesheet" href="/css/style.css?v=67">
+  <link rel="stylesheet" href="/css/style.css?v=70">
 </head>
 <body>
 
@@ -179,7 +179,7 @@
             <div id="single-step1-error" class="error-msg"></div>
           </div>
           <div class="notice">Unclaimed sats will automatically return to your Lightning Address. Next you’ll fund the voucher from your Bitcoin wallet.</div>
-          <button id="btn-create-single" class="btn btn-primary" disabled>Create Voucher</button>
+          <button id="btn-create-single" class="btn btn-primary">Create Voucher</button>
         </div>
 
         <!-- Step 2: Fund QR -->
@@ -219,7 +219,11 @@
               <div class="qr-wrapper">
                 <p>Waiting for payment...</p>
                 <div id="single-qr-container" class="qr-container"></div>
-                <p id="single-lnurl-text" class="qr-lnurl"></p>
+                <div style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+                  <button id="single-open-wallet-btn" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Open in Wallet</button>
+                  <span style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;">or</span>
+                  <button id="single-lnurl-text" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Copy Funding Code</button>
+                </div>
                 <button id="btn-pay-local-instead" class="btn btn-ghost btn-sm hidden">Fund with local voucher instead</button>
               </div>
             </div>
@@ -371,7 +375,11 @@
           </div>
           <div class="qr-wrapper">
             <div id="settings-wallet-qr" class="qr-container" style="cursor:pointer;"></div>
-            <p id="settings-wallet-lnurl" class="qr-lnurl"></p>
+            <div style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+              <button id="settings-wallet-open-btn" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Open in Wallet</button>
+              <span style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;">or</span>
+              <button id="settings-wallet-lnurl" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Copy Funding Code</button>
+            </div>
           </div>
           <p class="qr-wrapper">Waiting for payment...</p>
           <div style="text-align:center;margin-top:16px;">
@@ -419,47 +427,37 @@
       <div class="modal-title" style="text-align:center;">Terms &amp; Conditions</div>
 
       <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-        This service is provided <strong style="color:var(--text);">as-is</strong>, without warranties of any kind.
-        It is experimental software built on the Bitcoin Lightning Network. Use it at your own risk.
+        Satoshi Note is a tool for creating and sharing Bitcoin Lightning vouchers. You fund a voucher with sats,
+        and a shareable claim link is generated that anyone can redeem — no wallet required on the recipient's end.
+        Unclaimed sats are designed to return to your Lightning address when the voucher expires.
       </p>
 
       <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-        Send Sats is a free community tool intended for small, casual transfers. Do not use this service for
-        large amounts of Bitcoin.
+        <strong style="color:var(--text);">This app has no access to your funds.</strong> Satoshi Note is a
+        static web page — it runs entirely in your browser and holds no bitcoin, no keys, and no user data.
+        Your funds are held by the voucher server you connect to, not by this app.
       </p>
 
       <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-        While vouchers are designed to return unclaimed sats to the sender after the expiry period, this is
-        <strong style="color:var(--text);">not guaranteed</strong>. Transactions may fail, be delayed, or be lost due to technical issues.
+        The default voucher server is run by the same people who maintain this app, but it is intended for
+        experimentation only. We encourage you to explore the project, contribute, and run your own voucher
+        server. Self-hosting gives you full control and is the recommended way to use this software seriously.
       </p>
 
       <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-        The operator is <strong style="color:var(--text);">not liable</strong> for any loss of funds, failed
-        transactions, or damages arising from use of this service. You are solely responsible for safeguarding
-        voucher links and redemption codes.
+        <strong style="color:var(--text);">This is experimental software.</strong> Do not use it with more
+        bitcoin than you can afford to lose. Transactions may fail, be delayed, or be lost due to bugs,
+        Lightning Network issues, or server problems. Voucher refunds after expiry are not guaranteed.
       </p>
 
       <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-        This service may be modified, interrupted, or permanently shut down at any time, without notice.
-      </p>
-
-      <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-        Voucher redemption includes a fee of <strong style="color:var(--text);">0.5% or 10 sats (whichever is greater)</strong>.
-        This fee is used to cover Lightning Network transaction costs.
-      </p>
-
-      <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-        Lightning routing fees are variable but are <strong style="color:var(--text);">capped within this amount</strong>.
-        If the full fee is required to complete the payment, no surplus is retained.
-      </p>
-
-      <p style="font-size:0.875rem;color:var(--text-muted);margin-bottom:14px;line-height:1.6;">
-        In most cases, actual network fees are lower. Any remaining sats are retained by the service and may be used
-        at the operator's discretion.
+        Voucher redemption includes a fee set by the voucher server (typically 0.5% or 10 sats, whichever is
+        greater) to cover Lightning Network routing costs. Fees vary by server and are outside the control of
+        this app.
       </p>
 
       <p style="font-size:0.8rem;color:var(--text-muted);line-height:1.6;">
-        By using this service you agree to these terms.
+        By using this app you acknowledge that you understand these risks and agree to these terms.
       </p>
 
       <button class="modal-close" id="terms-close">Close</button>
@@ -602,7 +600,11 @@
       <label style="display:block;text-align:center;margin-bottom:12px;">👍 Tap or Scan the QR code to fund the voucher.</label>
       <div class="qr-wrapper">
         <div id="fhm-qr-container" class="qr-container"></div>
-        <p id="fhm-lnurl-text" class="qr-lnurl"></p>
+        <div style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+          <button id="fhm-open-wallet-btn" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Open in Wallet</button>
+          <span style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;">or</span>
+          <button id="fhm-lnurl-text" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Copy Funding Code</button>
+        </div>
       </div>
       <div id="fhm-wallet-area" style="display:flex;flex-direction:column;align-items:center;gap:2px;margin-top:4px;"></div>
       <button id="fhm-btn-local-instead" class="btn btn-ghost btn-sm hidden" style="margin-top:10px;width:100%;">Fund with local voucher instead</button>
@@ -626,11 +628,11 @@
 
 <!-- ── Print area ─────────────────────────────────────────────────────────────── -->
 <div id="print-area" style="display:none;"></div>
-<script src="/js/config.js?v=67"></script>
+<script src="/js/config.js?v=70"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/js/wallet-picker.js?v=67"></script>
-<script src="/js/lnaddr-redeem.js"></script>
-<script src="/js/app.js?v=67"></script>
+<script src="/js/wallet-picker.js?v=70"></script>
+<script src="/js/lnaddr-redeem.js?v=70"></script>
+<script src="/js/app.js?v=70"></script>
 <script>
 (function () {
   'use strict';

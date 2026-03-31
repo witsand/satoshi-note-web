@@ -12,7 +12,7 @@
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/css/style.css?v=67">
+  <link rel="stylesheet" href="/css/style.css?v=70">
   <style>
     .section-label {
       font-size: 0.7rem;
@@ -109,8 +109,8 @@
 
 <script src="/js/config.js"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/js/wallet-picker.js?v=67"></script>
-<script src="/js/lnaddr-redeem.js"></script>
+<script src="/js/wallet-picker.js?v=70"></script>
+<script src="/js/lnaddr-redeem.js?v=70"></script>
 <script>
 (function () {
   'use strict';
@@ -552,7 +552,6 @@
           <!-- FRONT FACE -->
           <div class="redeem-card-face redeem-card-front card" style="position:relative;overflow:hidden;text-align:center;background:linear-gradient(160deg,#2a1f0e 0%,#1a1a1a 55%);border:1px solid rgba(247,147,26,0.25);animation:hc-card-glow-orange 4s ease-in-out infinite,hc-card-flip-in 0.45s ease-out both;padding-bottom:20px;">
             <div class="hc-sticker" id="redeem-sticker">VOUCHER</div>
-            <button id="btn-lnaddr" title="Send to Lightning address" style="position:absolute;top:12px;left:12px;background:rgba(247,147,26,0.1);border:1.5px solid rgba(247,147,26,0.3);border-radius:8px;width:32px;height:32px;font-size:1rem;font-weight:700;color:var(--orange);cursor:pointer;line-height:1;padding:0;z-index:2;">@</button>
             ${confettiHTML}
 
             <!-- Expiry centered below header -->
@@ -577,13 +576,18 @@
           </div>
 
           <!-- BACK FACE -->
-          <div class="redeem-card-face redeem-card-back card" style="text-align:center;">
+          <div class="redeem-card-face redeem-card-back card" style="position:relative;text-align:center;">
+            <button id="btn-flip-back" title="Back to voucher" style="position:absolute;top:12px;left:12px;background:rgba(247,147,26,0.1);border:1.5px solid rgba(247,147,26,0.3);border-radius:8px;width:42px;height:42px;font-size:1.25rem;color:var(--orange);cursor:pointer;line-height:1;padding:0;z-index:2;">👁</button>
+            <button id="btn-lnaddr" title="Send to Lightning address" style="position:absolute;top:12px;right:12px;background:rgba(247,147,26,0.1);border:1.5px solid rgba(247,147,26,0.3);border-radius:8px;width:42px;height:42px;font-size:1.25rem;font-weight:700;color:var(--orange);cursor:pointer;line-height:1;padding:0;z-index:2;">@</button>
             <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Tap or Scan the QR code to claim</p>
             <div class="qr-wrapper" style="padding:0 0 4px;">
               <div id="redeem-qr-container" class="qr-container"></div>
-              <p id="redeem-lnurl-text" class="qr-lnurl" style="margin-top:8px;"></p>
+              <div style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+                <button id="btn-open-wallet" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Open in Wallet</button>
+                <span style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;">or</span>
+                <button id="redeem-lnurl-text" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Copy Claim Code</button>
+              </div>
             </div>
-            <button id="btn-flip-back" class="btn btn-secondary btn-sm" style="width:auto;margin:14px auto 4px;">← Back</button>
           </div>
 
         </div>
@@ -598,11 +602,11 @@
     container.title = 'Tap to open in wallet';
     container.addEventListener('click', () => { window.location.href = 'lightning:' + lnurl; });
 
+    const btnOpenWallet = document.getElementById('btn-open-wallet');
+    btnOpenWallet.addEventListener('click', () => { window.location.href = 'lightning:' + lnurl; });
+
     // Copy claim code
     const lnurlEl = document.getElementById('redeem-lnurl-text');
-    lnurlEl.textContent = 'Copy Claim Code';
-    lnurlEl.style.cursor = 'pointer';
-    lnurlEl.title = 'Tap to copy';
     lnurlEl.addEventListener('click', async function () {
       try {
         await navigator.clipboard.writeText(lnurl);
