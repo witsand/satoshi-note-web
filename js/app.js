@@ -390,6 +390,47 @@ async function tryMigrateVoucher(v) {
   } catch { return false; }
 }
 
+// If the wallet voucher belongs to a server that is no longer responding, check
+// the current _serverURL as a fallback (mirrors the history voucher behaviour).
+// Rebases and re-saves the voucher under the new origin when found. Returns true
+// if any wallet was migrated.
+async function tryMigrateWalletVouchers() {
+  const currentOrigin = new URL(_serverURL).origin;
+  const all = getWalletVouchers();
+  let migrated = false;
+  for (const [origin, wv] of Object.entries(all)) {
+    if (origin === currentOrigin) continue;
+    // Try the wallet's own server first.
+    let originalReachable = false;
+    try {
+      const res = await fetch(`${origin}/status`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pubkeys: [wv.pubkey] }),
+      });
+      if (res.ok) originalReachable = true;
+    } catch {}
+    if (originalReachable) continue; // Original server alive — leave as-is.
+    // Original server unreachable — try current server as fallback.
+    try {
+      const res = await fetch(`${_serverURL}/status`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pubkeys: [wv.pubkey] }),
+      });
+      if (!res.ok) continue;
+      const data = (await res.json())[wv.pubkey];
+      if (!data) continue;
+      // Voucher found on current server — rebase URLs and re-save.
+      delete all[origin];
+      rebaseVoucher(wv, currentOrigin);
+      wv._fv = APP_FV;
+      all[currentOrigin] = wv;
+      saveWalletVouchers(all);
+      migrated = true;
+    } catch {}
+  }
+  return migrated;
+}
+
 // ── Known servers list ────────────────────────────────────────────────────────
 function getKnownServers() {
   try { return JSON.parse(localStorage.getItem(LS_KNOWN_SERVERS)) || []; } catch { return []; }
@@ -1855,8 +1896,12 @@ function startWalletCountdown(expiresAt) {
 }
 
 async function refreshWalletBalance() {
-  const wv = getWalletVoucher(); // current server's wallet only
+  let wv = getWalletVoucher(); // current server's wallet only
   const pill = $('wallet-balance-pill');
+  if (!wv) {
+    const migrated = await tryMigrateWalletVouchers();
+    if (migrated) wv = getWalletVoucher();
+  }
   if (!wv) { if (pill) pill.classList.add('hidden'); return 0; }
   let wvOrigin;
   try { wvOrigin = new URL(wv.fund_url_prefix).origin; } catch { wvOrigin = new URL(_serverURL).origin; }
@@ -1933,7 +1978,11 @@ function renderSettingsRefund() {
 
 async function renderSettingsWalletSection() {
   const currentOrigin = new URL(_serverURL).origin;
-  const wv = getWalletVoucher(); // current server only
+  let wv = getWalletVoucher(); // current server only
+  if (!wv) {
+    const migrated = await tryMigrateWalletVouchers();
+    if (migrated) wv = getWalletVoucher();
+  }
   const createDiv = $('settings-wallet-create');
   const activeDiv = $('settings-wallet-active');
 
