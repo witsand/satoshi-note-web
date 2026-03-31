@@ -229,8 +229,6 @@ const DIAL_CODES = [
 const state = {
   step: 1,               // single voucher wizard step
   vouchers: null,        // current voucher array from API
-  batchStep: 'form',     // 'form' | 'results'
-  activeTab: 'single',
 };
 
 // ── Server URL resolution ─────────────────────────────────────────────────────
@@ -277,8 +275,7 @@ let _siteName = _cfgName
 let _siteLogoInner = _cfgName ? _buildSiteLogoInner(_cfgName) : 'Satoshi<span>Note</span>';
 let _githubURL = '';
 let _donateLNURL = '';
-let _batchEnabled = false;
-let _defaultDialCode = '+27';
+let _defaultDialCode = (window.DEFAULT_DIAL_CODE ? '+' + window.DEFAULT_DIAL_CODE : '+27');
 const _configReady = (async () => {
   try {
     const res = await fetch(_serverURL + '/config');
@@ -290,8 +287,6 @@ const _configReady = (async () => {
       if (!_cfgName && d.site_logo_inner) _siteLogoInner = d.site_logo_inner;
       if (d.github_url)      _githubURL = d.github_url;
       if (d.donate_lnurl)    _donateLNURL = d.donate_lnurl;
-      if (typeof d.batch_enabled === 'boolean') _batchEnabled = d.batch_enabled;
-      if (d.default_dial_code) _defaultDialCode = d.default_dial_code;
     }
   } catch (_) {}
 })();
@@ -352,9 +347,6 @@ function rebaseVoucher(v, newOrigin) {
   v.withdraw_url_prefix = v.withdraw_url_prefix.replace(oldOrigin, newOrigin);
   v.fund_lnurl          = lnurlEncode(v.fund_url_prefix + v.pubkey);
   v.claim_lnurl         = lnurlEncode(v.withdraw_url_prefix + v.secret);
-  if (v.batch_id) {
-    v.batch_fund_lnurl  = lnurlEncode(v.fund_url_prefix + v.batch_id);
-  }
 }
 
 // For legacy vouchers (no _fv): check the voucher's own saved server first.
@@ -371,7 +363,10 @@ async function tryMigrateVoucher(v) {
   }
   // Check if the voucher's original server still has it.
   try {
-    const res = await fetch(`${prefixOrigin}/voucher/status/${v.pubkey}`);
+    const res = await fetch(`${prefixOrigin}/status`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pubkeys: [v.pubkey] }),
+    });
     if (res.ok) {
       // Original server is alive — keep URLs as-is, just stamp version.
       v._fv = APP_FV;
@@ -380,7 +375,10 @@ async function tryMigrateVoucher(v) {
   } catch {}
   // Original server failed — try current _serverURL as fallback.
   try {
-    const res = await fetch(`${_serverURL}/voucher/status/${v.pubkey}`);
+    const res = await fetch(`${_serverURL}/status`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pubkeys: [v.pubkey] }),
+    });
     if (!res.ok) return false;
     rebaseVoucher(v, currentOrigin);
     v._fv = APP_FV;
@@ -411,12 +409,9 @@ let _countdownTimer = null;
 let _walletCountdownTimer = null;
 let _dialCode = '+1';
 let _singleExpiry = 259200;
-let _batchCount = 8;
-let _batchExpiry = 1209600;
 let _walletExpiry = 604800;
 let _minFundAmountMsat = 120000; // safe fallback
 let _walletRawBalanceMsat = 0;
-let _selectedTemplate = 'classic';
 
 function normalizeToE164(raw, dialCode) {
   const dialDigits = dialCode.replace('+', '');
@@ -430,16 +425,6 @@ function normalizeToE164(raw, dialCode) {
   }
   return dialDigits + digits;
 }
-
-const TEMPLATES = [
-  { id: 'classic',  name: 'Classic',       desc: 'Orange header, single QR'         },
-  { id: 'dual',     name: 'Dual Panel',     desc: 'Two QRs — claim + fund'           },
-  { id: 'giftcard', name: 'Gift Card',      desc: 'Dark premium, Bitcoin feel'       },
-  { id: 'minimal',  name: 'Minimal',        desc: 'Clean white, side-by-side QRs'   },
-  { id: 'darkmode', name: 'Dark Mode',      desc: 'Black background, orange accents' },
-  { id: 'fold',     name: 'Fold-in-Half',   desc: '2 per page, hides redeem QR'     },
-  { id: 'bizcard',  name: 'Business Card',  desc: '5 per page, wallet-sized'         },
-];
 
 function buildDialDropdown(preferred) {
   _dialCode = preferred;
@@ -499,10 +484,13 @@ function startFundingPoll(pubkey) {
   stopFundingPoll();
   _fundPoller = setInterval(async () => {
     try {
-      const r = await fetch(_serverURL + '/voucher/status/' + pubkey);
+      const r = await fetch(_serverURL + '/status', {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pubkeys: [pubkey] }),
+      });
       if (!r.ok) return;
-      const s = await r.json();
-      if (s.balance_msat > 0) {
+      const s = (await r.json())[pubkey];
+      if (s && s.balance_msat > 0) {
         stopFundingPoll();
         renderShareStep(state.vouchers[0]);
         showStep(3);
@@ -576,7 +564,7 @@ async function copyToClipboard(text, btn) {
 
 // ── API call ─────────────────────────────────────────────────────────────────
 async function createVouchers(payload) {
-  const res = await fetch(_serverURL + '/voucher/create', {
+  const res = await fetch(_serverURL + '/create', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: JSON.stringify(payload),
@@ -807,9 +795,7 @@ function renderFundStep(voucher) {
   // Save to history now (balance is 0 but LNURLs are ready; phone added in step 3)
   const histEntry = {
     id: uuidv4(),
-    type: 'single',
     createdAt: Math.floor(Date.now() / 1000),
-    batchName: `single-${Date.now()}`,
     refundAfterSeconds: voucher.refund_after_seconds,
     vouchers: state.vouchers,
   };
@@ -953,1112 +939,9 @@ function resetSingleWizard() {
   $('single-lnurl-text').textContent = '';
 }
 
-// ── Batch vouchers ────────────────────────────────────────────────────────────
-function showBatchStep(step) {
-  state.batchStep = step;
-  ['form', 'results'].forEach(s => {
-    const el = $(`batch-${s}`);
-    if (el) el.classList.toggle('hidden', s !== step);
-  });
-}
-
-async function handleCreateBatch() {
-  const btn = $('btn-create-batch');
-  const errEl = $('batch-error');
-  errEl.classList.remove('visible');
-
-  const name = $('batch-name').value.trim() || `batch-${Date.now()}`;
-  const singleUse = $('batch-single-use').checked;
-  const refundCode = localStorage.getItem(LS_REFUND) || '';
-
-  await _configReady;
-  const secrets = Array.from({ length: _batchCount }, () => generateSecretHex(_randomBytesLength));
-  const pubKeys = await Promise.all(secrets.map(s => secretToPubKey(s)));
-  const secretByPubKey = Object.fromEntries(pubKeys.map((pk, i) => [pk, secrets[i]]));
-
-  btn.disabled = true;
-  const origHTML = btn.innerHTML;
-  btn.innerHTML = '<span class="spinner"></span> Creating…';
-
-  try {
-    const vouchers = await createVouchers({
-      pub_keys: pubKeys,
-      refund_code: refundCode,
-      refund_after_seconds: _batchExpiry,
-      single_use: singleUse,
-    });
-
-    for (const v of vouchers) {
-      const s = secretByPubKey[v.pubkey];
-      v.secret = s;
-      v.claim_lnurl = lnurlEncode(v.withdraw_url_prefix + s);
-      v.fund_lnurl = lnurlEncode(v.fund_url_prefix + v.pubkey);
-      v.batch_fund_lnurl = lnurlEncode(v.fund_url_prefix + v.batch_id);
-      v._fv = APP_FV;
-    }
-
-    state.vouchers = vouchers;
-    state.batchExpiry = _batchExpiry;
-    state.batchName = name;
-
-    pushHistory({
-      id: uuidv4(),
-      type: 'batch',
-      createdAt: Math.floor(Date.now() / 1000),
-      phone: null,
-      batchName: name,
-      refundAfterSeconds: _batchExpiry,
-      vouchers,
-    });
-
-    renderBatchResults(vouchers);
-    showBatchStep('results');
-  } catch (err) {
-    errEl.textContent = err.message || 'Failed to create vouchers. Try again.';
-    errEl.classList.add('visible');
-  } finally {
-    btn.disabled = false;
-    btn.innerHTML = origHTML;
-  }
-}
-
-function renderBatchResults(vouchers) {
-  // Template picker (renders tiles asynchronously)
-  renderTemplatePicker(vouchers);
-
-  // Print button
-  $('btn-print-vouchers').onclick = () => printVouchers(vouchers, state.batchName, state.batchExpiry);
-
-  // Fund QR
-  const batchFundLnurl = vouchers[0].batch_fund_lnurl;
-  const container = $('batch-qr-container');
-  renderQR(container, batchFundLnurl, 256);
-  container.style.cursor = 'pointer';
-  container.title = 'Tap to open in wallet';
-  container.onclick = () => { window.location.href = 'lightning:' + batchFundLnurl; };
-  const lnurlEl = $('batch-lnurl-text');
-  lnurlEl.textContent = 'Copy Funding Code';
-  lnurlEl.title = 'Tap to copy';
-  lnurlEl.onclick = () => copyToClipboard(batchFundLnurl, lnurlEl);
-  attachWalletButton(lnurlEl, batchFundLnurl);
-  $('batch-fund-note').textContent = `This funds all ${vouchers.length} vouchers equally.`;
-
-  // Done
-  $('btn-done-batch').onclick = () => {
-    state.vouchers = null;
-    resetBatchForm();
-    showBatchStep('form');
-  };
-}
-
-function resetBatchForm() {
-  $('batch-name').value = '';
-  $('batch-error').classList.remove('visible');
-  $('batch-qr-container').innerHTML = '';
-  $('template-grid').innerHTML = '';
-}
-
-// ── Print / PDF system ────────────────────────────────────────────────────────
-
-async function printVouchers(vouchers, batchName, refundAfterSeconds) {
-  const btn = $('btn-print-vouchers');
-  btn.disabled = true;
-  btn.innerHTML = '<span class="spinner"></span> Preparing…';
-  try {
-    await loadjsPDF();
-    const generators = {
-      classic:  generatePDFClassic,
-      dual:     generatePDFDualPanel,
-      giftcard: generatePDFGiftCard,
-      minimal:  generatePDFMinimal,
-      darkmode: generatePDFDarkMode,
-      fold:     generatePDFFold,
-      bizcard:  generatePDFBizCard,
-    };
-    const doc = await generators[_selectedTemplate](vouchers, batchName, refundAfterSeconds);
-    await appendBatchFundPage(doc, vouchers, batchName, refundAfterSeconds);
-    doc.autoPrint();
-    window.open(doc.output('bloburl'), '_blank');
-  } catch (err) {
-    alert('Print preparation failed: ' + err.message);
-  } finally {
-    btn.disabled = false;
-    btn.textContent = 'Print Vouchers';
-  }
-}
-
-function loadjsPDF() {
-  return new Promise((resolve, reject) => {
-    if (window.jspdf) { resolve(); return; }
-    const s = document.createElement('script');
-    s.src = 'https://cdn.jsdelivr.net/npm/jspdf@2.5.1/dist/jspdf.umd.min.js';
-    s.onload = resolve;
-    s.onerror = () => reject(new Error('Failed to load jsPDF'));
-    document.head.appendChild(s);
-  });
-}
-
-// ── Canvas helpers for QR / rotation ─────────────────────────────────────────
-
-async function drawQROnCanvas(ctx, dataURL, x, y, size) {
-  if (!dataURL) return;
-  const img = new Image();
-  await new Promise(r => { img.onload = r; img.src = dataURL; });
-  ctx.drawImage(img, x, y, size, size);
-}
-
-function rotateCanvas180(src) {
-  const dst = document.createElement('canvas');
-  dst.width = src.width;
-  dst.height = src.height;
-  const ctx = dst.getContext('2d');
-  ctx.translate(dst.width / 2, dst.height / 2);
-  ctx.rotate(Math.PI);
-  ctx.drawImage(src, -src.width / 2, -src.height / 2);
-  return dst;
-}
-
-// ── PDF generators ────────────────────────────────────────────────────────────
-
-async function generatePDFClassic(vouchers, batchName, refundAfterSeconds) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const W = 297, H = 210;
-  const displayName = batchName && !isAutoName(batchName) ? batchName : 'Lightning Voucher';
-
-  for (let i = 0; i < vouchers.length; i++) {
-    if (i > 0) doc.addPage();
-    const v = vouchers[i];
-
-    doc.setFillColor(255, 255, 255);
-    doc.rect(0, 0, W, H, 'F');
-
-    doc.setFillColor(247, 147, 26);
-    doc.rect(0, 0, W, 22, 'F');
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(13);
-    doc.setFont('helvetica', 'bold');
-    doc.text((_siteName||'Satoshi Note'), 8, 14);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.text('Lightning Voucher', 8, 20);
-
-    const claimWebURL = `${window.location.origin}/redeem.html?lightning=${encodeURIComponent(v.claim_lnurl)}`;
-    const qrDataURL = await qrToDataURL(claimWebURL, 220);
-    if (qrDataURL) doc.addImage(qrDataURL, 'PNG', 10, 28, 78, 78);
-
-    doc.setTextColor(15, 15, 15);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(15);
-    doc.text(displayName, 100, 42);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(10);
-    doc.setTextColor(80, 80, 80);
-    doc.text(expiryAfterFundingLabel(refundAfterSeconds), 100, 54);
-    doc.setFontSize(9);
-    doc.text('How to redeem:', 100, 70);
-    doc.text('1. Install a Lightning wallet (try blink.sv)', 100, 79);
-    doc.text('2. Open the app and tap Receive / Scan', 100, 87);
-    doc.text('3. Scan the QR code on the left', 100, 95);
-    doc.text('4. Confirm to receive your Bitcoin', 100, 103);
-
-    doc.setFillColor(247, 147, 26);
-    doc.rect(0, H - 12, W, 12, 'F');
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(7);
-    doc.text('Scan with a Lightning wallet · blink.sv for beginners', W / 2, H - 4, { align: 'center' });
-  }
-  return doc;
-}
-
-async function generatePDFDualPanel(vouchers, batchName, refundAfterSeconds) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const W = 297, H = 210;
-
-  for (let i = 0; i < vouchers.length; i++) {
-    if (i > 0) doc.addPage();
-    const v = vouchers[i];
-
-    doc.setFillColor(20, 20, 35);
-    doc.rect(0, 0, W, H, 'F');
-    doc.setFillColor(30, 30, 55);
-    doc.rect(0, 0, W, 24, 'F');
-    doc.setTextColor(247, 147, 26);
-    doc.setFontSize(14);
-    doc.setFont('helvetica', 'bold');
-    doc.text('Lightning Voucher', 10, 16);
-    doc.setTextColor(180, 180, 200);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.text((_siteName||'Satoshi Note'), W - 10, 16, { align: 'right' });
-
-    const claimWebURL = `${window.location.origin}/redeem.html?lightning=${encodeURIComponent(v.claim_lnurl)}`;
-    const claimQR = await qrToDataURL(claimWebURL, 220);
-    if (claimQR) doc.addImage(claimQR, 'PNG', 10, 30, 100, 100);
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.text('SCAN TO CLAIM', 10, 140);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(180, 180, 200);
-    doc.text('Open Lightning wallet and scan', 10, 148);
-
-    doc.setDrawColor(60, 60, 90);
-    doc.setLineWidth(0.5);
-    doc.line(W / 2, 24, W / 2, H - 12);
-
-    const fundURL = `lightning:${v.fund_lnurl}`;
-    const fundQR = await qrToDataURL(fundURL, 160);
-    if (fundQR) doc.addImage(fundQR, 'PNG', W / 2 + 10, 34, 75, 75);
-    doc.setTextColor(247, 147, 26);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text('SCAN TO ADD FUNDS', W / 2 + 10, 118);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(180, 180, 200);
-    doc.text(expiryAfterFundingLabel(refundAfterSeconds), W / 2 + 10, 128);
-
-    doc.setFillColor(247, 147, 26);
-    doc.rect(0, H - 12, W, 12, 'F');
-    doc.setTextColor(0, 0, 0);
-    doc.setFontSize(7);
-    doc.text((_siteName||'Satoshi Note') + ' · Bitcoin Lightning Voucher', W / 2, H - 4, { align: 'center' });
-  }
-  return doc;
-}
-
-async function generatePDFGiftCard(vouchers, batchName, refundAfterSeconds) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const W = 297, H = 210;
-
-  for (let i = 0; i < vouchers.length; i++) {
-    if (i > 0) doc.addPage();
-    const v = vouchers[i];
-
-    doc.setFillColor(18, 12, 6);
-    doc.rect(0, 0, W, H, 'F');
-    doc.setFillColor(247, 147, 26);
-    doc.rect(0, 0, 24, H, 'F');
-    doc.setTextColor(0, 0, 0);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(11);
-    doc.text('SATOSHI NOTE', 15, H / 2 + 28, { angle: 90 });
-
-    doc.setTextColor(38, 25, 10);
-    doc.setFontSize(140);
-    doc.text('\u20BF', W * 0.62, H * 0.72, { align: 'center' });
-
-    const claimWebURL = `${window.location.origin}/redeem.html?lightning=${encodeURIComponent(v.claim_lnurl)}`;
-    const claimQR = await qrToDataURL(claimWebURL, 260);
-    if (claimQR) {
-      doc.setFillColor(255, 255, 255);
-      doc.rect(W / 2 - 50, 22, 100, 100, 'F');
-      doc.addImage(claimQR, 'PNG', W / 2 - 48, 24, 96, 96);
-    }
-    doc.setTextColor(247, 147, 26);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(14);
-    doc.text('SCAN TO CLAIM', W / 2, 132, { align: 'center' });
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(200, 180, 160);
-    doc.text(expiryAfterFundingLabel(refundAfterSeconds), W / 2, 142, { align: 'center' });
-
-    const fundURL = `lightning:${v.fund_lnurl}`;
-    const fundQR = await qrToDataURL(fundURL, 120);
-    if (fundQR) {
-      doc.setFillColor(255, 255, 255);
-      doc.rect(W - 54, H - 56, 44, 44, 'F');
-      doc.addImage(fundQR, 'PNG', W - 53, H - 55, 42, 42);
-    }
-    doc.setTextColor(140, 130, 110);
-    doc.setFontSize(7);
-    doc.text('Add funds', W - 32, H - 8, { align: 'center' });
-  }
-  return doc;
-}
-
-async function generatePDFMinimal(vouchers, batchName, refundAfterSeconds) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const W = 297, H = 210;
-  const displayName = batchName && !isAutoName(batchName) ? batchName : 'Lightning Voucher';
-
-  for (let i = 0; i < vouchers.length; i++) {
-    if (i > 0) doc.addPage();
-    const v = vouchers[i];
-
-    doc.setFillColor(250, 250, 250);
-    doc.rect(0, 0, W, H, 'F');
-    doc.setFillColor(247, 147, 26);
-    doc.rect(0, 0, W, 3, 'F');
-    doc.rect(0, H - 3, W, 3, 'F');
-
-    doc.setTextColor(20, 20, 20);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(16);
-    doc.text(displayName, W / 2, 20, { align: 'center' });
-
-    const qrSize = 88;
-    const claimWebURL = `${window.location.origin}/redeem.html?lightning=${encodeURIComponent(v.claim_lnurl)}`;
-    const claimQR = await qrToDataURL(claimWebURL, 220);
-    const fundURL = `lightning:${v.fund_lnurl}`;
-    const fundQR = await qrToDataURL(fundURL, 220);
-
-    const leftX = W / 2 - qrSize - 12;
-    const rightX = W / 2 + 12;
-    const qrY = 28;
-
-    if (claimQR) doc.addImage(claimQR, 'PNG', leftX, qrY, qrSize, qrSize);
-    if (fundQR) doc.addImage(fundQR, 'PNG', rightX, qrY, qrSize, qrSize);
-
-    doc.setTextColor(40, 40, 40);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text('CLAIM', leftX + qrSize / 2, qrY + qrSize + 10, { align: 'center' });
-    doc.text('TOP UP', rightX + qrSize / 2, qrY + qrSize + 10, { align: 'center' });
-
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(9);
-    doc.setTextColor(100, 100, 100);
-    doc.text(expiryAfterFundingLabel(refundAfterSeconds), W / 2, H - 10, { align: 'center' });
-  }
-  return doc;
-}
-
-async function generatePDFDarkMode(vouchers, batchName, refundAfterSeconds) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const W = 297, H = 210;
-
-  for (let i = 0; i < vouchers.length; i++) {
-    if (i > 0) doc.addPage();
-    const v = vouchers[i];
-
-    doc.setFillColor(13, 13, 13);
-    doc.rect(0, 0, W, H, 'F');
-    doc.setFillColor(247, 147, 26);
-    doc.rect(0, 0, W, 2, 'F');
-    doc.rect(0, H - 2, W, 2, 'F');
-
-    doc.setTextColor(247, 147, 26);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(18);
-    doc.text('Lightning Voucher', W / 2, 18, { align: 'center' });
-
-    doc.setTextColor(28, 28, 28);
-    doc.setFontSize(110);
-    doc.text('\u20BF', W * 0.73, H * 0.70, { align: 'center' });
-
-    const claimWebURL = `${window.location.origin}/redeem.html?lightning=${encodeURIComponent(v.claim_lnurl)}`;
-    const claimQR = await qrToDataURL(claimWebURL, 260);
-    if (claimQR) {
-      doc.setFillColor(255, 255, 255);
-      doc.rect(10, 24, 96, 96, 'F');
-      doc.addImage(claimQR, 'PNG', 12, 26, 92, 92);
-    }
-    doc.setTextColor(255, 255, 255);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(10);
-    doc.text('SCAN TO CLAIM', 10, 130);
-    doc.setFont('helvetica', 'normal');
-    doc.setFontSize(8);
-    doc.setTextColor(140, 140, 140);
-    doc.text(expiryAfterFundingLabel(refundAfterSeconds), 10, 140);
-
-    const fundURL = `lightning:${v.fund_lnurl}`;
-    const fundQR = await qrToDataURL(fundURL, 160);
-    if (fundQR) {
-      doc.setFillColor(255, 255, 255);
-      doc.rect(W * 0.42, 30, 70, 70, 'F');
-      doc.addImage(fundQR, 'PNG', W * 0.42 + 1, 31, 68, 68);
-    }
-    doc.setTextColor(247, 147, 26);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(9);
-    doc.text('ADD FUNDS', W * 0.42 + 35, 110, { align: 'center' });
-  }
-  return doc;
-}
-
-// ── Canvas strip renderers for Fold + BizCard ─────────────────────────────────
-
-async function renderFoldOutside(v, Wpx, Hpx, batchName, refundAfterSeconds) {
-  const canvas = document.createElement('canvas');
-  canvas.width = Wpx; canvas.height = Hpx;
-  const ctx = canvas.getContext('2d');
-
-  ctx.fillStyle = '#fffaf5';
-  ctx.fillRect(0, 0, Wpx, Hpx);
-  const hdr = Math.round(Hpx * 0.14);
-  ctx.fillStyle = '#F7931A';
-  ctx.fillRect(0, 0, Wpx, hdr);
-  ctx.fillStyle = '#000';
-  ctx.font = `bold ${Math.round(hdr * 0.6)}px sans-serif`;
-  ctx.fillText('SATOSHI NOTE', Math.round(Wpx * 0.04), Math.round(hdr * 0.75));
-
-  const fundURL = `lightning:${v.fund_lnurl}`;
-  const fundQR = await qrToDataURL(fundURL, 200);
-  const qrSize = Math.round(Math.min(Wpx * 0.55, Hpx * 0.52));
-  const qrX = Math.round((Wpx - qrSize) / 2);
-  const qrY = hdr + Math.round((Hpx - hdr - Hpx * 0.18 - qrSize) / 2);
-  if (fundQR) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(qrX - 3, qrY - 3, qrSize + 6, qrSize + 6);
-    await drawQROnCanvas(ctx, fundQR, qrX, qrY, qrSize);
-  }
-
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#333';
-  ctx.font = `bold ${Math.round(Hpx * 0.07)}px sans-serif`;
-  ctx.fillText('Scan to add funds', Wpx / 2, Hpx - Math.round(Hpx * 0.09));
-  ctx.fillStyle = '#666';
-  ctx.font = `${Math.round(Hpx * 0.055)}px sans-serif`;
-  const name = batchName && !isAutoName(batchName) ? batchName : '';
-  if (name) ctx.fillText(name, Wpx / 2, Hpx - Math.round(Hpx * 0.02));
-  ctx.textAlign = 'left';
-  return canvas;
-}
-
-async function renderFoldInside(v, Wpx, Hpx, refundAfterSeconds) {
-  const canvas = document.createElement('canvas');
-  canvas.width = Wpx; canvas.height = Hpx;
-  const ctx = canvas.getContext('2d');
-
-  ctx.fillStyle = '#111';
-  ctx.fillRect(0, 0, Wpx, Hpx);
-
-  const claimWebURL = `${window.location.origin}/redeem.html?lightning=${encodeURIComponent(v.claim_lnurl)}`;
-  const claimQR = await qrToDataURL(claimWebURL, 200);
-  const qrSize = Math.round(Math.min(Wpx * 0.55, Hpx * 0.52));
-  const qrX = Math.round((Wpx - qrSize) / 2);
-  const qrY = Math.round(Hpx * 0.1);
-  if (claimQR) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(qrX - 3, qrY - 3, qrSize + 6, qrSize + 6);
-    await drawQROnCanvas(ctx, claimQR, qrX, qrY, qrSize);
-  }
-
-  ctx.textAlign = 'center';
-  ctx.fillStyle = '#F7931A';
-  ctx.font = `bold ${Math.round(Hpx * 0.09)}px sans-serif`;
-  ctx.fillText('SCAN TO CLAIM', Wpx / 2, Hpx - Math.round(Hpx * 0.12));
-  ctx.fillStyle = '#aaa';
-  ctx.font = `${Math.round(Hpx * 0.065)}px sans-serif`;
-  ctx.fillText(expiryAfterFundingLabel(refundAfterSeconds), Wpx / 2, Hpx - Math.round(Hpx * 0.04));
-  ctx.textAlign = 'left';
-  return canvas;
-}
-
-async function generatePDFFold(vouchers, batchName, refundAfterSeconds) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'landscape', unit: 'mm', format: 'a4' });
-  const W = 297, H = 210, stripH = 105, midX = W / 2;
-  const px = 3.78; // mm to px at ~96dpi
-  const halfWpx = Math.round(midX * px);
-  const stripHpx = Math.round(stripH * px);
-
-  for (let p = 0; p < Math.ceil(vouchers.length / 2); p++) {
-    if (p > 0) doc.addPage();
-    const v1 = vouchers[p * 2];
-    const v2 = vouchers[p * 2 + 1] || null;
-
-    doc.setFillColor(255, 255, 255);
-    doc.rect(0, 0, W, H, 'F');
-
-    // Voucher 1 — top strip
-    const out1 = await renderFoldOutside(v1, halfWpx, stripHpx, batchName, refundAfterSeconds);
-    const in1  = await renderFoldInside(v1, halfWpx, stripHpx, refundAfterSeconds);
-    doc.addImage(out1.toDataURL('image/png'), 'PNG', 0,    0, midX,  stripH);
-    doc.addImage(in1.toDataURL('image/png'),  'PNG', midX, 0, midX,  stripH);
-
-    // Voucher 2 — bottom strip, rotated 180°
-    if (v2) {
-      const out2 = await renderFoldOutside(v2, halfWpx, stripHpx, batchName, refundAfterSeconds);
-      const in2  = await renderFoldInside(v2, halfWpx, stripHpx, refundAfterSeconds);
-      // Rotated: inside→left side, outside→right side
-      doc.addImage(rotateCanvas180(in2).toDataURL('image/png'),  'PNG', 0,    stripH, midX, stripH);
-      doc.addImage(rotateCanvas180(out2).toDataURL('image/png'), 'PNG', midX, stripH, midX, stripH);
-    }
-
-    // Dashed horizontal cut line at y=105
-    doc.setDrawColor(120, 120, 120);
-    doc.setLineDashPattern([3, 3], 0);
-    doc.setLineWidth(0.4);
-    doc.line(0, stripH, W, stripH);
-    doc.setLineDashPattern([], 0);
-    doc.setTextColor(100, 100, 100);
-    doc.setFontSize(6);
-    doc.setFont('helvetica', 'normal');
-    doc.text('\u2702 CUT HERE', W / 2 - 8, stripH - 0.5);
-
-    // Dashed vertical fold lines
-    doc.setLineDashPattern([3, 3], 0);
-    doc.line(midX, 0, midX, v2 ? H : stripH);
-    doc.setLineDashPattern([], 0);
-    doc.text('FOLD', midX + 1, stripH / 2, { angle: 270 });
-    if (v2) doc.text('FOLD', midX + 1, stripH + stripH / 2, { angle: 270 });
-  }
-  return doc;
-}
-
-async function renderBizCardOutside(v, Wpx, Hpx, batchName) {
-  const canvas = document.createElement('canvas');
-  canvas.width = Wpx; canvas.height = Hpx;
-  const ctx = canvas.getContext('2d');
-
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(0, 0, Wpx, Hpx);
-  const hdr = Math.round(Hpx * 0.20);
-  ctx.fillStyle = '#F7931A';
-  ctx.fillRect(0, 0, Wpx, hdr);
-  ctx.fillStyle = '#000';
-  ctx.font = `bold ${Math.round(hdr * 0.55)}px sans-serif`;
-  ctx.fillText((_siteName||'Satoshi Note'), Math.round(Wpx * 0.04), Math.round(hdr * 0.72));
-
-  const fundURL = `lightning:${v.fund_lnurl}`;
-  const fundQR = await qrToDataURL(fundURL, 140);
-  const qrSize = Math.round(Hpx * 0.62);
-  const qrX = Math.round(Wpx * 0.05);
-  const qrY = hdr + Math.round((Hpx - hdr - qrSize) / 2);
-  if (fundQR) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(qrX - 2, qrY - 2, qrSize + 4, qrSize + 4);
-    await drawQROnCanvas(ctx, fundQR, qrX, qrY, qrSize);
-  }
-
-  ctx.fillStyle = '#333';
-  ctx.font = `${Math.round(Hpx * 0.11)}px sans-serif`;
-  ctx.fillText('Scan to add funds', qrX + qrSize + Math.round(Wpx * 0.05), qrY + Math.round(qrSize * 0.45));
-  ctx.fillStyle = '#888';
-  ctx.font = `${Math.round(Hpx * 0.09)}px sans-serif`;
-  ctx.fillText('Lightning voucher', qrX + qrSize + Math.round(Wpx * 0.05), qrY + Math.round(qrSize * 0.65));
-
-  return canvas;
-}
-
-async function renderBizCardInside(v, Wpx, Hpx) {
-  const canvas = document.createElement('canvas');
-  canvas.width = Wpx; canvas.height = Hpx;
-  const ctx = canvas.getContext('2d');
-
-  ctx.fillStyle = '#111';
-  ctx.fillRect(0, 0, Wpx, Hpx);
-
-  const claimWebURL = `${window.location.origin}/redeem.html?lightning=${encodeURIComponent(v.claim_lnurl)}`;
-  const claimQR = await qrToDataURL(claimWebURL, 140);
-  const qrSize = Math.round(Hpx * 0.62);
-  const qrX = Math.round(Wpx * 0.05);
-  const qrY = Math.round((Hpx - qrSize) / 2);
-  if (claimQR) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(qrX - 2, qrY - 2, qrSize + 4, qrSize + 4);
-    await drawQROnCanvas(ctx, claimQR, qrX, qrY, qrSize);
-  }
-
-  ctx.textAlign = 'right';
-  ctx.fillStyle = '#F7931A';
-  ctx.font = `bold ${Math.round(Hpx * 0.13)}px sans-serif`;
-  ctx.fillText('SCAN TO CLAIM', Wpx - Math.round(Wpx * 0.04), qrY + Math.round(qrSize * 0.40));
-  ctx.fillStyle = '#aaa';
-  ctx.font = `${Math.round(Hpx * 0.10)}px sans-serif`;
-  ctx.fillText('Open Lightning wallet', Wpx - Math.round(Wpx * 0.04), qrY + Math.round(qrSize * 0.62));
-  ctx.fillText('& scan to receive BTC', Wpx - Math.round(Wpx * 0.04), qrY + Math.round(qrSize * 0.80));
-  ctx.textAlign = 'left';
-  return canvas;
-}
-
-async function generatePDFBizCard(vouchers, batchName, refundAfterSeconds) {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF({ orientation: 'portrait', unit: 'mm', format: 'a4' });
-  const W = 210, H = 297;
-  const cardW = 185, cardH = 55, halfW = 92.5;
-  const perPage = 5, gap = 4;
-  const topMargin = (H - perPage * cardH - (perPage - 1) * gap) / 2;
-  const leftMargin = (W - cardW) / 2;
-  const px = 3.78;
-  const halfWpx = Math.round(halfW * px);
-  const cardHpx = Math.round(cardH * px);
-
-  for (let p = 0; p < Math.ceil(vouchers.length / perPage); p++) {
-    if (p > 0) doc.addPage('a4', 'portrait');
-    doc.setFillColor(255, 255, 255);
-    doc.rect(0, 0, W, H, 'F');
-
-    for (let c = 0; c < perPage; c++) {
-      const vIdx = p * perPage + c;
-      if (vIdx >= vouchers.length) break;
-      const v = vouchers[vIdx];
-      const cardY = topMargin + c * (cardH + gap);
-
-      const outside = await renderBizCardOutside(v, halfWpx, cardHpx, batchName);
-      doc.addImage(outside.toDataURL('image/png'), 'PNG', leftMargin, cardY, halfW, cardH);
-
-      const inside = await renderBizCardInside(v, halfWpx, cardHpx);
-      doc.addImage(rotateCanvas180(inside).toDataURL('image/png'), 'PNG', leftMargin + halfW, cardY, halfW, cardH);
-
-      // Fold line
-      doc.setDrawColor(140, 140, 140);
-      doc.setLineDashPattern([2, 2], 0);
-      doc.setLineWidth(0.3);
-      doc.line(leftMargin + halfW, cardY, leftMargin + halfW, cardY + cardH);
-      doc.setLineDashPattern([], 0);
-
-      // Card border
-      doc.setDrawColor(210, 210, 210);
-      doc.setLineWidth(0.2);
-      doc.rect(leftMargin, cardY, cardW, cardH);
-    }
-  }
-  return doc;
-}
-
-async function appendBatchFundPage(doc, vouchers, batchName, refundAfterSeconds) {
-  doc.addPage([297, 210], 'l');
-  const W = 297, H = 210;
-
-  doc.setFillColor(255, 255, 255);
-  doc.rect(0, 0, W, H, 'F');
-
-  doc.setFillColor(247, 147, 26);
-  doc.rect(0, 0, W, 26, 'F');
-  doc.setTextColor(0, 0, 0);
-  doc.setFont('helvetica', 'bold');
-  doc.setFontSize(15);
-  doc.text('FUND ALL VOUCHERS', W / 2, 16, { align: 'center' });
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.text(`Funds all ${vouchers.length} vouchers equally`, W / 2, 23, { align: 'center' });
-
-  if (batchName && !isAutoName(batchName)) {
-    doc.setTextColor(20, 20, 20);
-    doc.setFont('helvetica', 'bold');
-    doc.setFontSize(18);
-    doc.text(batchName, W / 2, 42, { align: 'center' });
-  }
-
-  const batchFundLNURL = vouchers[0].batch_fund_lnurl;
-  const qrDataURL = await qrToDataURL(batchFundLNURL, 300);
-  if (qrDataURL) {
-    doc.setFillColor(255, 255, 255);
-    doc.rect(W / 2 - 52, 48, 104, 104, 'F');
-    doc.addImage(qrDataURL, 'PNG', W / 2 - 50, 50, 100, 100);
-  }
-
-  const textY = 160;
-  doc.setTextColor(50, 50, 50);
-  doc.setFont('helvetica', 'normal');
-  doc.setFontSize(9);
-  doc.text(`Created: ${new Date().toLocaleDateString()}`, W / 2, textY, { align: 'center' });
-  doc.text(expiryAfterFundingLabel(refundAfterSeconds), W / 2, textY + 8, { align: 'center' });
-  doc.text('Open your Lightning wallet and scan this code', W / 2, textY + 18, { align: 'center' });
-
-  doc.setFillColor(247, 147, 26);
-  doc.rect(0, H - 12, W, 12, 'F');
-  doc.setTextColor(0, 0, 0);
-  doc.setFontSize(7);
-  doc.text((_siteName||'Satoshi Note') + ' · Bitcoin Lightning Vouchers', W / 2, H - 4, { align: 'center' });
-}
-
-// ── Template picker UI ────────────────────────────────────────────────────────
-
-async function renderTemplatePicker(vouchers) {
-  const grid = $('template-grid');
-  grid.innerHTML = '<p style="font-size:0.8rem;color:var(--text-muted);">Generating previews…</p>';
-
-  const v = vouchers[0];
-  const claimWebURL = `${window.location.origin}/redeem.html?lightning=${encodeURIComponent(v.claim_lnurl)}`;
-  const fundLightningURL = `lightning:${v.fund_lnurl}`;
-
-  const qrs = {
-    claim:    await qrToDataURL(claimWebURL, 200),
-    fund:     await qrToDataURL(fundLightningURL, 200),
-    batchFund: await qrToDataURL(v.batch_fund_lnurl, 200),
-    rawClaim: await qrToDataURL(v.claim_lnurl, 200),
-  };
-
-  grid.innerHTML = '';
-
-  for (const tpl of TEMPLATES) {
-    const tile = document.createElement('div');
-    tile.className = 'template-tile' + (tpl.id === _selectedTemplate ? ' selected' : '');
-    tile.dataset.id = tpl.id;
-
-    const isPortrait = tpl.id === 'bizcard';
-    const canvas = document.createElement('canvas');
-    canvas.width  = isPortrait ? 254 : 360;
-    canvas.height = isPortrait ? 360 : 254;
-
-    const nameEl = document.createElement('div');
-    nameEl.className = 'template-tile-name';
-    nameEl.textContent = tpl.name;
-
-    const descEl = document.createElement('div');
-    descEl.className = 'template-tile-desc';
-    descEl.textContent = tpl.desc;
-
-    tile.appendChild(canvas);
-    tile.appendChild(nameEl);
-    tile.appendChild(descEl);
-
-    tile.addEventListener('click', () => {
-      _selectedTemplate = tpl.id;
-      document.querySelectorAll('.template-tile').forEach(t => t.classList.remove('selected'));
-      tile.classList.add('selected');
-      openTemplatePreview(tpl.id, qrs, state.batchName, state.batchExpiry);
-    });
-
-    grid.appendChild(tile);
-
-    // Draw preview asynchronously per tile
-    drawTemplatePreview(canvas, tpl.id, qrs, state.batchName, state.batchExpiry);
-  }
-}
-
-async function drawTemplatePreview(canvas, templateId, qrs, batchName, refundAfterSeconds) {
-  const ctx = canvas.getContext('2d');
-  const w = canvas.width, h = canvas.height;
-  ctx.clearRect(0, 0, w, h);
-  const fns = {
-    classic:  drawClassicPreview,
-    dual:     drawDualPreview,
-    giftcard: drawGiftCardPreview,
-    minimal:  drawMinimalPreview,
-    darkmode: drawDarkModePreview,
-    fold:     drawFoldPreview,
-    bizcard:  drawBizCardPreview,
-  };
-  if (fns[templateId]) await fns[templateId](ctx, w, h, qrs, batchName, refundAfterSeconds);
-}
-
-async function openTemplatePreview(templateId, qrs, batchName, refundAfterSeconds) {
-  const modal = $('template-preview-modal');
-  const tpl = TEMPLATES.find(t => t.id === templateId);
-  $('template-preview-title').textContent = tpl ? tpl.name : templateId;
-  const isPortrait = templateId === 'bizcard';
-  const canvas = $('template-preview-canvas');
-  canvas.width  = isPortrait ? 565 : 800;
-  canvas.height = isPortrait ? 800 : 565;
-  modal.classList.remove('hidden');
-  await drawTemplatePreview(canvas, templateId, qrs, batchName, refundAfterSeconds);
-}
-
-// ── Preview draw functions ────────────────────────────────────────────────────
-
-async function drawClassicPreview(ctx, w, h, qrs, batchName, refundAfterSeconds) {
-  const ORANGE = '#F7931A';
-  ctx.fillStyle = '#fff';
-  ctx.fillRect(0, 0, w, h);
-
-  const hdr = Math.round(h * 0.14);
-  ctx.fillStyle = ORANGE;
-  ctx.fillRect(0, 0, w, hdr);
-  ctx.fillStyle = '#000';
-  ctx.font = `bold ${Math.round(hdr * 0.58)}px sans-serif`;
-  ctx.fillText((_siteName||'Satoshi Note'), Math.round(w * 0.02), Math.round(hdr * 0.72));
-  ctx.font = `${Math.round(hdr * 0.42)}px sans-serif`;
-  ctx.fillText('Lightning Voucher', Math.round(w * 0.02), Math.round(hdr * 0.95));
-
-  const qrSize = Math.round(h * 0.54);
-  const qrX = Math.round(w * 0.03);
-  const qrY = hdr + Math.round((h - hdr - h * 0.10 - qrSize) / 2);
-  if (qrs.rawClaim) await drawQROnCanvas(ctx, qrs.rawClaim, qrX, qrY, qrSize);
-
-  const rx = Math.round(w * 0.42);
-  ctx.fillStyle = '#111';
-  ctx.font = `bold ${Math.round(h * 0.06)}px sans-serif`;
-  const name = batchName && !isAutoName(batchName) ? batchName : 'Lightning Voucher';
-  ctx.fillText(name.slice(0, 20), rx, qrY + Math.round(h * 0.08));
-  ctx.fillStyle = '#555';
-  ctx.font = `${Math.round(h * 0.048)}px sans-serif`;
-  ctx.fillText(expiryAfterFundingLabel(refundAfterSeconds), rx, qrY + Math.round(h * 0.20));
-  ctx.fillText('How to redeem:', rx, qrY + Math.round(h * 0.34));
-  ctx.font = `${Math.round(h * 0.042)}px sans-serif`;
-  ctx.fillText('1. Install Lightning wallet', rx, qrY + Math.round(h * 0.44));
-  ctx.fillText('2. Tap Receive / Scan', rx, qrY + Math.round(h * 0.53));
-  ctx.fillText('3. Scan the QR code', rx, qrY + Math.round(h * 0.62));
-  ctx.fillText('4. Confirm to receive', rx, qrY + Math.round(h * 0.71));
-
-  ctx.fillStyle = ORANGE;
-  ctx.fillRect(0, h - Math.round(h * 0.10), w, Math.round(h * 0.10));
-  ctx.fillStyle = '#000';
-  ctx.font = `${Math.round(h * 0.042)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('Scan with a Lightning wallet', w / 2, h - Math.round(h * 0.03));
-  ctx.textAlign = 'left';
-}
-
-async function drawDualPreview(ctx, w, h, qrs, batchName, refundAfterSeconds) {
-  ctx.fillStyle = '#14141f';
-  ctx.fillRect(0, 0, w, h);
-  const hdr = Math.round(h * 0.15);
-  ctx.fillStyle = '#1e1e37';
-  ctx.fillRect(0, 0, w, hdr);
-  ctx.fillStyle = '#F7931A';
-  ctx.font = `bold ${Math.round(hdr * 0.52)}px sans-serif`;
-  ctx.fillText('Lightning Voucher', Math.round(w * 0.02), Math.round(hdr * 0.70));
-
-  const qrSize = Math.round(h * 0.52);
-  const qrY = hdr + Math.round(h * 0.06);
-  if (qrs.claim) await drawQROnCanvas(ctx, qrs.claim, Math.round(w * 0.03), qrY, qrSize);
-  ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.round(h * 0.056)}px sans-serif`;
-  ctx.fillText('SCAN TO CLAIM', Math.round(w * 0.03), qrY + qrSize + Math.round(h * 0.08));
-
-  ctx.strokeStyle = '#333';
-  ctx.lineWidth = 1;
-  ctx.beginPath();
-  ctx.moveTo(w / 2, hdr);
-  ctx.lineTo(w / 2, h - Math.round(h * 0.08));
-  ctx.stroke();
-
-  const rqrSize = Math.round(qrSize * 0.65);
-  if (qrs.fund) await drawQROnCanvas(ctx, qrs.fund, Math.round(w * 0.53), qrY + Math.round(h * 0.04), rqrSize);
-  ctx.fillStyle = '#F7931A';
-  ctx.font = `bold ${Math.round(h * 0.046)}px sans-serif`;
-  ctx.fillText('ADD FUNDS', Math.round(w * 0.53), qrY + rqrSize + Math.round(h * 0.12));
-  ctx.fillStyle = '#aaa';
-  ctx.font = `${Math.round(h * 0.038)}px sans-serif`;
-  ctx.fillText(expiryAfterFundingLabel(refundAfterSeconds).slice(0, 24), Math.round(w * 0.53), qrY + rqrSize + Math.round(h * 0.20));
-
-  ctx.fillStyle = '#F7931A';
-  ctx.fillRect(0, h - Math.round(h * 0.08), w, Math.round(h * 0.08));
-  ctx.fillStyle = '#000';
-  ctx.font = `${Math.round(h * 0.04)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText((_siteName||'Satoshi Note'), w / 2, h - Math.round(h * 0.025));
-  ctx.textAlign = 'left';
-}
-
-async function drawGiftCardPreview(ctx, w, h, qrs, batchName, refundAfterSeconds) {
-  ctx.fillStyle = '#12080a';
-  ctx.fillRect(0, 0, w, h);
-  const stripe = Math.round(w * 0.07);
-  ctx.fillStyle = '#F7931A';
-  ctx.fillRect(0, 0, stripe, h);
-
-  ctx.fillStyle = 'rgba(247,147,26,0.06)';
-  ctx.font = `bold ${Math.round(h * 0.85)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('\u20BF', w * 0.62, h * 0.78);
-  ctx.textAlign = 'left';
-
-  const qrSize = Math.round(h * 0.55);
-  const qrX = Math.round((w - qrSize) / 2 + stripe * 0.3);
-  const qrY = Math.round(h * 0.10);
-  if (qrs.claim) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(qrX - 3, qrY - 3, qrSize + 6, qrSize + 6);
-    await drawQROnCanvas(ctx, qrs.claim, qrX, qrY, qrSize);
-  }
-  ctx.fillStyle = '#F7931A';
-  ctx.font = `bold ${Math.round(h * 0.062)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('SCAN TO CLAIM', w * 0.58, qrY + qrSize + Math.round(h * 0.09));
-  ctx.fillStyle = '#c8b090';
-  ctx.font = `${Math.round(h * 0.046)}px sans-serif`;
-  ctx.fillText(expiryAfterFundingLabel(refundAfterSeconds), w * 0.58, qrY + qrSize + Math.round(h * 0.18));
-
-  const fqrSize = Math.round(h * 0.22);
-  if (qrs.fund) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(w - fqrSize - Math.round(w * 0.04) - 2, h - fqrSize - Math.round(h * 0.06) - 2, fqrSize + 4, fqrSize + 4);
-    await drawQROnCanvas(ctx, qrs.fund, w - fqrSize - Math.round(w * 0.04), h - fqrSize - Math.round(h * 0.06), fqrSize);
-  }
-  ctx.textAlign = 'left';
-}
-
-async function drawMinimalPreview(ctx, w, h, qrs, batchName, refundAfterSeconds) {
-  ctx.fillStyle = '#fafafa';
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = '#F7931A';
-  ctx.fillRect(0, 0, w, Math.round(h * 0.018));
-  ctx.fillRect(0, h - Math.round(h * 0.018), w, Math.round(h * 0.018));
-
-  const name = batchName && !isAutoName(batchName) ? batchName : 'Lightning Voucher';
-  ctx.fillStyle = '#111';
-  ctx.font = `bold ${Math.round(h * 0.065)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText(name.slice(0, 22), w / 2, Math.round(h * 0.12));
-  ctx.textAlign = 'left';
-
-  const qrSize = Math.round(h * 0.52);
-  const leftX = Math.round(w / 2 - qrSize - w * 0.04);
-  const rightX = Math.round(w / 2 + w * 0.04);
-  const qrY = Math.round(h * 0.17);
-
-  if (qrs.claim) await drawQROnCanvas(ctx, qrs.claim, leftX, qrY, qrSize);
-  if (qrs.fund)  await drawQROnCanvas(ctx, qrs.fund,  rightX, qrY, qrSize);
-
-  ctx.fillStyle = '#222';
-  ctx.font = `bold ${Math.round(h * 0.050)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('CLAIM', leftX + qrSize / 2, qrY + qrSize + Math.round(h * 0.07));
-  ctx.fillText('TOP UP', rightX + qrSize / 2, qrY + qrSize + Math.round(h * 0.07));
-  ctx.fillStyle = '#777';
-  ctx.font = `${Math.round(h * 0.040)}px sans-serif`;
-  ctx.fillText(expiryAfterFundingLabel(refundAfterSeconds), w / 2, h - Math.round(h * 0.04));
-  ctx.textAlign = 'left';
-}
-
-async function drawDarkModePreview(ctx, w, h, qrs, batchName, refundAfterSeconds) {
-  ctx.fillStyle = '#0d0d0d';
-  ctx.fillRect(0, 0, w, h);
-  ctx.fillStyle = '#F7931A';
-  ctx.fillRect(0, 0, w, Math.round(h * 0.015));
-  ctx.fillRect(0, h - Math.round(h * 0.015), w, Math.round(h * 0.015));
-
-  ctx.fillStyle = 'rgba(247,147,26,0.06)';
-  ctx.font = `bold ${Math.round(h * 0.75)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('\u20BF', w * 0.73, h * 0.72);
-  ctx.textAlign = 'left';
-
-  ctx.fillStyle = '#F7931A';
-  ctx.font = `bold ${Math.round(h * 0.072)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('Lightning Voucher', w / 2, Math.round(h * 0.12));
-  ctx.textAlign = 'left';
-
-  const qrSize = Math.round(h * 0.52);
-  const qrX = Math.round(w * 0.03);
-  const qrY = Math.round(h * 0.15);
-  if (qrs.claim) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(qrX - 2, qrY - 2, qrSize + 4, qrSize + 4);
-    await drawQROnCanvas(ctx, qrs.claim, qrX, qrY, qrSize);
-  }
-  ctx.fillStyle = '#fff';
-  ctx.font = `bold ${Math.round(h * 0.046)}px sans-serif`;
-  ctx.fillText('SCAN TO CLAIM', qrX, qrY + qrSize + Math.round(h * 0.07));
-  ctx.fillStyle = '#888';
-  ctx.font = `${Math.round(h * 0.038)}px sans-serif`;
-  ctx.fillText(expiryAfterFundingLabel(refundAfterSeconds), qrX, qrY + qrSize + Math.round(h * 0.14));
-
-  const rqrSize = Math.round(qrSize * 0.55);
-  if (qrs.fund) {
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(Math.round(w * 0.44) - 2, qrY + Math.round(h * 0.04) - 2, rqrSize + 4, rqrSize + 4);
-    await drawQROnCanvas(ctx, qrs.fund, Math.round(w * 0.44), qrY + Math.round(h * 0.04), rqrSize);
-  }
-  ctx.fillStyle = '#F7931A';
-  ctx.font = `bold ${Math.round(h * 0.042)}px sans-serif`;
-  ctx.fillText('ADD FUNDS', Math.round(w * 0.44), qrY + rqrSize + Math.round(h * 0.14));
-}
-
-async function drawFoldPreview(ctx, w, h, qrs, batchName, refundAfterSeconds) {
-  // Two strips — top: voucher 1, bottom: voucher 2 (rotated)
-  const mid = Math.round(h / 2);
-  const foldX = Math.round(w / 2);
-  const qrSize = Math.round(Math.min(w * 0.22, mid * 0.55));
-
-  // Top strip — left: outside (fund), right: inside (claim)
-  ctx.fillStyle = '#fffaf5';
-  ctx.fillRect(0, 0, foldX, mid);
-  ctx.fillStyle = '#F7931A';
-  ctx.fillRect(0, 0, foldX, Math.round(mid * 0.14));
-  ctx.fillStyle = '#000';
-  ctx.font = `bold ${Math.round(mid * 0.09)}px sans-serif`;
-  ctx.fillText('SATOSHI NOTE', Math.round(w * 0.02), Math.round(mid * 0.11));
-  if (qrs.fund) await drawQROnCanvas(ctx, qrs.fund, Math.round(foldX / 2 - qrSize / 2), Math.round(mid * 0.20), qrSize);
-  ctx.fillStyle = '#444';
-  ctx.font = `${Math.round(mid * 0.075)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('Add funds', foldX / 2, Math.round(mid * 0.86));
-  ctx.textAlign = 'left';
-
-  ctx.fillStyle = '#111';
-  ctx.fillRect(foldX, 0, w - foldX, mid);
-  if (qrs.claim) await drawQROnCanvas(ctx, qrs.claim, Math.round(foldX + (w - foldX) / 2 - qrSize / 2), Math.round(mid * 0.20), qrSize);
-  ctx.fillStyle = '#F7931A';
-  ctx.font = `bold ${Math.round(mid * 0.075)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('CLAIM', foldX + (w - foldX) / 2, Math.round(mid * 0.88));
-  ctx.textAlign = 'left';
-
-  // Dashed cut line
-  ctx.strokeStyle = '#999';
-  ctx.setLineDash([4, 4]);
-  ctx.lineWidth = 1;
-  ctx.beginPath(); ctx.moveTo(0, mid); ctx.lineTo(w, mid); ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Dashed fold line
-  ctx.strokeStyle = '#aaa';
-  ctx.setLineDash([3, 3]);
-  ctx.beginPath(); ctx.moveTo(foldX, 0); ctx.lineTo(foldX, h); ctx.stroke();
-  ctx.setLineDash([]);
-
-  // Bottom strip — rotated representation (swap sides, darker)
-  ctx.fillStyle = '#111';
-  ctx.fillRect(0, mid, foldX, h - mid);
-  if (qrs.claim) await drawQROnCanvas(ctx, qrs.claim, Math.round(foldX / 2 - qrSize / 2), mid + Math.round((h - mid) * 0.20), qrSize);
-
-  ctx.fillStyle = '#fffaf5';
-  ctx.fillRect(foldX, mid, w - foldX, h - mid);
-  ctx.fillStyle = '#F7931A';
-  ctx.fillRect(foldX, mid, w - foldX, Math.round((h - mid) * 0.14));
-  ctx.fillStyle = '#000';
-  ctx.font = `${Math.round((h - mid) * 0.075)}px sans-serif`;
-  ctx.textAlign = 'center';
-  ctx.fillText('Add funds', foldX + (w - foldX) / 2, mid + Math.round((h - mid) * 0.86));
-  ctx.textAlign = 'left';
-}
-
-async function drawBizCardPreview(ctx, w, h, qrs, batchName, refundAfterSeconds) {
-  ctx.fillStyle = '#f5f5f5';
-  ctx.fillRect(0, 0, w, h);
-
-  const cards = 5, gap = Math.round(h * 0.015);
-  const totalGap = (cards - 1) * gap;
-  const cardH = Math.round((h - totalGap) / cards);
-  const foldX = Math.round(w / 2);
-  const qrSize = Math.round(cardH * 0.60);
-
-  for (let i = 0; i < cards; i++) {
-    const y = i * (cardH + gap);
-
-    // Outside (left)
-    ctx.fillStyle = '#fff';
-    ctx.fillRect(0, y, foldX, cardH);
-    ctx.fillStyle = '#F7931A';
-    ctx.fillRect(0, y, foldX, Math.round(cardH * 0.20));
-    ctx.fillStyle = '#000';
-    ctx.font = `bold ${Math.round(cardH * 0.14)}px sans-serif`;
-    ctx.fillText('Satoshi', Math.round(w * 0.02), y + Math.round(cardH * 0.16));
-    if (qrs.fund) await drawQROnCanvas(ctx, qrs.fund, Math.round(w * 0.02), y + Math.round(cardH * 0.24), qrSize);
-
-    // Inside (right, dark)
-    ctx.fillStyle = '#111';
-    ctx.fillRect(foldX, y, w - foldX, cardH);
-    if (qrs.claim) await drawQROnCanvas(ctx, qrs.claim, Math.round(foldX + (w - foldX) / 2 - qrSize / 2), y + Math.round(cardH * 0.20), qrSize);
-    ctx.fillStyle = '#F7931A';
-    ctx.font = `bold ${Math.round(cardH * 0.13)}px sans-serif`;
-    ctx.textAlign = 'right';
-    ctx.fillText('CLAIM', w - Math.round(w * 0.03), y + Math.round(cardH * 0.88));
-    ctx.textAlign = 'left';
-
-    // Fold line
-    ctx.strokeStyle = '#aaa';
-    ctx.setLineDash([2, 2]);
-    ctx.lineWidth = 0.8;
-    ctx.beginPath(); ctx.moveTo(foldX, y); ctx.lineTo(foldX, y + cardH); ctx.stroke();
-    ctx.setLineDash([]);
-
-    // Card border
-    ctx.strokeStyle = '#ddd';
-    ctx.lineWidth = 0.5;
-    ctx.strokeRect(0, y, w, cardH);
-  }
-}
-
 // ── History screen ────────────────────────────────────────────────────────────
 function isAutoName(name) {
-  return /^batch-\d+$/.test(name) || /^single-\d+$/.test(name);
+  return /^single-\d+$/.test(name);
 }
 
 // In-memory cache for the current session. Pre-populated from localStorage for terminal states.
@@ -2083,7 +966,7 @@ function preloadTerminalStatuses(history) {
   });
 }
 
-// Fetches statuses for the given pubkeys via the batch endpoint, updates the in-memory cache,
+// Fetches statuses for the given pubkeys individually, updates the in-memory cache,
 // and persists any newly-terminal statuses back to localStorage.
 async function fetchAndCacheStatuses(pubkeys, history) {
   const currentOrigin = new URL(_serverURL).origin;
@@ -2098,64 +981,44 @@ async function fetchAndCacheStatuses(pubkeys, history) {
     }
   }
 
-  // Group pubkeys by their voucher's home server.
-  const byOrigin = new Map();
-  for (const pk of pubkeys) {
-    const origin = pubkeyOrigin.get(pk) || currentOrigin;
-    if (!byOrigin.has(origin)) byOrigin.set(origin, []);
-    byOrigin.get(origin).push(pk);
-  }
-
   let changed = false;
-  const failedPubkeys = [];
 
-  // Fetch each group from its home server.
-  for (const [origin, pks] of byOrigin) {
+  // Fetch each pubkey individually from its home server.
+  await Promise.all(pubkeys.map(async pk => {
+    const origin = pubkeyOrigin.get(pk) || currentOrigin;
     try {
-      const res = await fetch(origin + '/voucher/status/batch', {
-        method: 'POST',
-        headers: { 'Content-Type': 'application/json' },
-        body: JSON.stringify({ pubkeys: pks }),
+      const res = await fetch(`${origin}/status`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pubkeys: [pk] }),
       });
       if (!res.ok) throw new Error();
-      const data = await res.json();
-      for (const pk of pks) {
-        historyStatusCache.set(pk, data[pk] ?? null);
-      }
+      const data = (await res.json())[pk] ?? null;
+      historyStatusCache.set(pk, data);
     } catch {
-      failedPubkeys.push(...pks);
-    }
-  }
-
-  // For any pubkeys whose home server failed, retry against _serverURL as fallback.
-  // If a voucher responds from a different origin than saved, rebase it so future
-  // checks go directly to the working server.
-  if (failedPubkeys.length > 0) {
-    const retryPubkeys = failedPubkeys.filter(pk => pubkeyOrigin.get(pk) !== currentOrigin);
-    if (retryPubkeys.length > 0) {
-      try {
-        const res = await fetch(_serverURL + '/voucher/status/batch', {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pubkeys: retryPubkeys }),
-        });
-        if (!res.ok) throw new Error();
-        const data = await res.json();
-        for (const pk of retryPubkeys) {
-          historyStatusCache.set(pk, data[pk] ?? null);
+      // Retry against current server if home server differs and failed.
+      if (origin !== currentOrigin) {
+        try {
+          const res = await fetch(`${_serverURL}/status`, {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pubkeys: [pk] }),
+          });
+          if (!res.ok) throw new Error();
+          const data = (await res.json())[pk] ?? null;
+          historyStatusCache.set(pk, data);
           const v = pubkeyVoucher.get(pk);
-          if (data[pk] && v) {
+          if (data && v) {
             rebaseVoucher(v, currentOrigin);
             v._fv = APP_FV;
             changed = true;
           }
+        } catch {
+          historyStatusCache.set(pk, null);
         }
-      } catch {}
+      } else {
+        historyStatusCache.set(pk, null);
+      }
     }
-    for (const pk of failedPubkeys) {
-      if (!historyStatusCache.has(pk)) historyStatusCache.set(pk, null);
-    }
-  }
+  }));
 
   // Persist newly-terminal statuses and track peak net balance for display after redemption.
   history.forEach(entry => {
@@ -2286,14 +1149,9 @@ function renderSectionBody(body, cards, state, showQR, history) {
 
   function recipientParts(entry) {
     const parts = [];
-    if (entry.type === 'single') {
-      const phoneDigits = entry.phone ? entry.phone.replace(/\D/g, '') : '';
-      if (phoneDigits.length > 3) parts.push(esc(entry.phone));
-      if (entry.note) parts.push(`<em>${esc(entry.note)}</em>`);
-    } else {
-      const name = entry.batchName;
-      if (name && !isAutoName(name)) parts.push(esc(name));
-    }
+    const phoneDigits = entry.phone ? entry.phone.replace(/\D/g, '') : '';
+    if (phoneDigits.length > 3) parts.push(esc(entry.phone));
+    if (entry.note) parts.push(`<em>${esc(entry.note)}</em>`);
     return parts;
   }
   function buildRecipientLine(entry, extraClass) {
@@ -2309,10 +1167,6 @@ function renderSectionBody(body, cards, state, showQR, history) {
     card.style.animationDelay = `${idx * 0.07}s`;
 
     const date = new Date(entry.createdAt * 1000).toLocaleString();
-    const typeBadge = entry.type === 'single' ? 'badge-single' : 'badge-batch';
-    const typeLabel = entry.type === 'single'
-      ? 'Single'
-      : (total > 1 ? `Batch ${count}/${total}` : 'Batch');
 
     const recipientLine = buildRecipientLine(entry);
     const serverHost = (() => { try { return new URL(vouchers[0].fund_url_prefix).hostname; } catch { return null; } })();
@@ -2335,7 +1189,6 @@ function renderSectionBody(body, cards, state, showQR, history) {
         : '';
       inner = `
         <div class="hc-row">
-          <span class="badge ${typeBadge}">${typeLabel}</span>
           <span class="hc-date">${date}</span>
         </div>
         ${serverHostLine}
@@ -2361,9 +1214,6 @@ function renderSectionBody(body, cards, state, showQR, history) {
       card.classList.add('history-card-funded');
       inner = `
         <div class="hc-sticker">FUNDED</div>
-        <div class="hc-row">
-          <span class="badge ${typeBadge}">${typeLabel}</span>
-        </div>
         ${serverHostLine}
         <div style="text-align:center;margin-bottom:10px;"><span class="hc-expiry-inline expiry" data-expires-at="${expiresAt}"></span></div>
         <div class="hc-funded-hero">
@@ -2412,9 +1262,6 @@ function renderSectionBody(body, cards, state, showQR, history) {
       inner = `
         <div class="hc-sticker hc-sticker-green">CLAIMED</div>
         ${confettiHTML}
-        <div class="hc-row">
-          <span class="badge ${typeBadge}">${typeLabel}</span>
-        </div>
         ${serverHostLine}
         <div class="hc-redeemed-hero">
           <img src="/apple-touch-icon.png" class="hc-favicon-icon" alt="" loading="lazy">
@@ -2433,7 +1280,6 @@ function renderSectionBody(body, cards, state, showQR, history) {
         : '';
       inner = `
         <div class="hc-row">
-          <span class="badge ${typeBadge}">${typeLabel}</span>
           ${tagHTML}
         </div>
         ${serverHostLine}
@@ -2516,222 +1362,8 @@ function updateSectionCounts(history, container) {
   });
 }
 
-function computeLeaderboardCounts(history, cache) {
-  const now = Math.floor(Date.now() / 1000);
-  const d = new Date();
-  const monthStart = Math.floor(new Date(Date.UTC(d.getUTCFullYear(), d.getUTCMonth(), 1)).getTime() / 1000);
 
-  let fundedMonth = 0, fundedAllTime = 0, redeemedMonth = 0, redeemedAllTime = 0;
 
-  history.forEach(entry => {
-    entry.vouchers.forEach(v => {
-      const s = cache.get(v.pubkey);
-      const state = classifyVoucher(s, now);
-      const isFunded = state === 'funded' || state === 'redeemed' || state === 'expired';
-      const isRedeemed = state === 'redeemed';
-
-      if (isFunded) {
-        fundedAllTime++;
-        if (entry.createdAt >= monthStart) fundedMonth++;
-      }
-      if (isRedeemed) {
-        redeemedAllTime++;
-        if (entry.createdAt >= monthStart) redeemedMonth++;
-      }
-    });
-  });
-
-  return { funded_month: fundedMonth, funded_all_time: fundedAllTime, redeemed_month: redeemedMonth, redeemed_all_time: redeemedAllTime };
-}
-
-function renderLeaderboardContent(container, data, counts) {
-  const monthLabel = new Date().toLocaleString('default', { month: 'long', year: 'numeric' });
-
-  function medalFor(rank, total) {
-    if (total === 0) return '–';
-    if (rank === 1) return '🥇';
-    if (rank === 2) return '🥈';
-    if (rank === 3) return '🥉';
-    if (total >= 10 && rank <= Math.ceil(total * 0.1)) return '🔥';
-    return '⚡';
-  }
-
-  function ordinal(n) {
-    const s = ['th', 'st', 'nd', 'rd'];
-    const v = n % 100;
-    return n + (s[(v - 20) % 10] || s[v] || s[0]);
-  }
-
-  function highScoresTable(scores, counts) {
-    if (!scores) return '';
-    const cols = [
-      { key: 'funded_month',      label: 'Sats Shared',       scope: 'This Month', userCount: counts.funded_month },
-      { key: 'redeemed_month',    label: 'Bitcoiners Minted', scope: 'This Month', userCount: counts.redeemed_month },
-      { key: 'funded_all_time',   label: 'Sats Shared',       scope: 'All Time',   userCount: counts.funded_all_time },
-      { key: 'redeemed_all_time', label: 'Bitcoiners Minted', scope: 'All Time',   userCount: counts.redeemed_all_time },
-    ];
-    const medals = [
-      { cls: 'hs-gold',   icon: '🥇', status: 'LEGENDARY'  },
-      { cls: 'hs-silver', icon: '🥈', status: 'ELITE'       },
-      { cls: 'hs-bronze', icon: '🥉', status: 'RISING STAR' },
-    ];
-    const rows = medals.map((m, i) => `
-      <tr class="hs-row ${m.cls}">
-        <td class="hs-medal-cell">
-          <span class="hs-medal-badge">${m.icon}</span>
-          <span class="hs-status ${m.cls}">${m.status}</span>
-        </td>
-        ${cols.map(c => {
-          const val = scores[c.key] != null && scores[c.key][i] != null ? scores[c.key][i] : null;
-          const isYou = val != null && c.userCount > 0 && c.userCount === val;
-          return `<td class="hs-score-cell ${m.cls}${isYou ? ' hs-you' : ''}">
-            ${val != null ? val : '<span class="hs-empty">–</span>'}
-            ${isYou ? '<span class="hs-you-badge">YOU</span>' : ''}
-          </td>`;
-        }).join('')}
-      </tr>`).join('');
-
-    return `
-      <div class="hs-section">
-        <h2 class="hs-title">⚡ HIGH SCORES ⚡</h2>
-        <div class="hs-table-wrap">
-          <table class="hs-table">
-            <thead>
-              <tr>
-                <th class="hs-rank-head"></th>
-                ${cols.map(c => `<th class="hs-col-head">${c.label}<br><span class="hs-scope">${c.scope}</span></th>`).join('')}
-              </tr>
-            </thead>
-            <tbody>${rows}</tbody>
-          </table>
-        </div>
-      </div>`;
-  }
-
-  function redeemedTeaserCard(label, isMonth) {
-    const tips = isMonth
-      ? [
-          'Show someone the QR code and say "scan this for free bitcoin." Watch their face. That first reaction? That\'s the orange pill. ⚡',
-          'The trick? Tell them it\'s real sats they can actually keep or spend. Curiosity does the rest. Try it today.',
-          'Birthday card, coffee bet, random act of orange-pilling — the best redemptions come from the least expected moments. 🌱',
-        ]
-      : [
-          'No redemptions yet — but one changed mind is worth a thousand funded vouchers. Keep planting seeds. 🌱',
-        ];
-    const tip = tips[Math.floor(Date.now() / 60000) % tips.length];
-    return `
-      <div class="lb-card lb-card-teaser">
-        <div class="lb-card-medal">🌱</div>
-        <div class="lb-card-label">${label}</div>
-        <div class="lb-card-rank">–</div>
-        <div class="lb-card-of">${isMonth ? 'no redemptions yet' : 'none yet'}</div>
-        <div class="lb-card-desc">${tip}</div>
-      </div>`;
-  }
-
-  function cardHTML(key, label, count) {
-    const isRedeemed = key === 'redeemed_month' || key === 'redeemed_all_time';
-    if (count === 0 && isRedeemed) return redeemedTeaserCard(label, key === 'redeemed_month');
-
-    const { rank, total } = data[key];
-    // If count is 0 for a funded card (e.g. no funding this month) show no rank
-    if (count === 0) return `
-      <div class="lb-card">
-        <div class="lb-card-medal">–</div>
-        <div class="lb-card-label">${label}</div>
-        <div class="lb-card-rank">–</div>
-        <div class="lb-card-of">no activity this month</div>
-      </div>`;
-
-    const v = count !== 1 ? 's' : '';
-    const descriptions = {
-      funded_month:      `This month you've funded ${count} voucher${v} — putting bitcoin directly into ${count} new set${v} of hands. That's the ${ordinal(rank)} highest score this month. Keep going, the revolution needs you.`,
-      redeemed_month:    `${count} person${v} claimed their sats this month thanks to you — ${count} new bitcoiner${v} minted. You rank ${ordinal(rank)} this month. Every redemption is a mind opened.`,
-      funded_all_time:   `You've funded ${count} voucher${v} in total, spreading the orange pill one sat at a time. All-time rank: ${ordinal(rank)} of ${total}. Legendary.`,
-      redeemed_all_time: `${count} bitcoiner${v} minted by you, for life. You're ${ordinal(rank)} of all time. That's a legacy worth building.`,
-    };
-    return `
-      <div class="lb-card">
-        <div class="lb-card-medal">${medalFor(rank, total)}</div>
-        <div class="lb-card-label">${label}</div>
-        <div class="lb-card-rank">#${rank}</div>
-        <div class="lb-card-of">of ${total}</div>
-        <div class="lb-card-desc">${descriptions[key]}</div>
-      </div>`;
-  }
-
-  const heroRankLine = counts.redeemed_month > 0
-    ? `<p class="lb-subtitle">You're #${data.redeemed_month.rank} for Bitcoiners Minted this month — keep going! ⚡</p>`
-    : counts.redeemed_all_time > 0
-      ? `<p class="lb-subtitle">You're #${data.redeemed_all_time.rank} all time for Bitcoiners Minted. ⚡</p>`
-      : `<p class="lb-subtitle">Your vouchers are out there — show someone the QR code and say "it's free bitcoin." That first claim changes everything. ⚡</p>`;
-
-  container.innerHTML = `
-    <div class="lb-hero">
-      <div class="lb-trophy">🏆</div>
-      <h1 class="lb-title">LEADERBOARD</h1>
-      ${heroRankLine}
-    </div>
-
-    <div class="lb-category">
-      <div class="lb-category-header">
-        <span class="lb-category-cup">🏆</span>
-        <span class="lb-category-title">${monthLabel}</span>
-      </div>
-      <div class="lb-grid">
-        ${cardHTML('funded_month', 'Sats Shared', counts.funded_month)}
-        ${cardHTML('redeemed_month', 'Bitcoiners Minted', counts.redeemed_month)}
-      </div>
-    </div>
-
-    <div class="lb-category">
-      <div class="lb-category-header">
-        <span class="lb-category-cup">🏆</span>
-        <span class="lb-category-title">Hall of Legends</span>
-      </div>
-      <div class="lb-grid">
-        ${cardHTML('funded_all_time', 'Sats Shared', counts.funded_all_time)}
-        ${cardHTML('redeemed_all_time', 'Bitcoiners Minted', counts.redeemed_all_time)}
-      </div>
-    </div>
-
-    <p class="lb-motivate">Every redemption mints a new bitcoiner. Be the one who started it all. ⚡</p>
-    ${highScoresTable(data.top_scores, counts)}`;
-}
-
-async function renderLeaderboardScreen(container) {
-  container.innerHTML = `<div class="lb-loading">🏆 Loading your rank…</div>`;
-
-  const history = getHistory();
-
-  if (!history.length) {
-    container.innerHTML = `<div class="lb-empty"><div style="font-size:2.5rem;margin-bottom:12px;">🏆</div><p>No vouchers yet.<br>Create and fund your first voucher<br>to appear on the leaderboard.</p></div>`;
-    return;
-  }
-
-  preloadTerminalStatuses(history);
-  const missing = history.flatMap(e => e.vouchers.map(v => v.pubkey))
-    .filter(pk => !historyStatusCache.has(pk));
-  if (missing.length > 0) await fetchAndCacheStatuses(missing, history);
-
-  const counts = computeLeaderboardCounts(history, historyStatusCache);
-
-  if (counts.funded_all_time === 0) {
-    container.innerHTML = `<div class="lb-empty"><div style="font-size:2.5rem;margin-bottom:12px;">🏆</div><p>No funded vouchers yet.<br>Fund your first voucher<br>to appear on the leaderboard.</p></div>`;
-    return;
-  }
-  try {
-    const res = await fetch(_serverURL + '/leaderboard', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(counts),
-    });
-    if (!res.ok) throw new Error();
-    renderLeaderboardContent(container, await res.json(), counts);
-  } catch {
-    container.innerHTML = `<p class="lb-error">Could not load leaderboard. Try again later.</p>`;
-  }
-}
 
 function renderHistory() {
   const container = $('history-list');
@@ -2779,7 +1411,7 @@ function renderHistory() {
 
 async function openFundHistoryModal(entry) {
   const voucher = entry.vouchers[0];
-  const lnurl = entry.type === 'single' ? voucher.fund_lnurl : (voucher.batch_fund_lnurl || voucher.fund_lnurl);
+  const lnurl = voucher.fund_lnurl;
   const modal = $('fund-history-modal');
   const walletPanel = $('fhm-wallet-panel');
   const lightningPanel = $('fhm-lightning-panel');
@@ -2868,11 +1500,7 @@ async function doHistoryTransfer(voucher, amtEl, errEl) {
   btn.textContent = 'Funding…';
 
   try {
-    const res = await fetch(_serverURL + '/transfer', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret: wv.secret, pub_key: voucher.pubkey, amount: amountSats * 1000 }),
-    });
+    const res = await fetch(`${_serverURL}/transfer/${wv.secret}/${voucher.pubkey}?amount=${amountSats * 1000}`);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || `Transfer failed (${res.status})`);
@@ -2931,13 +1559,13 @@ function confirmDeleteHistoryEntry() {
 
 function openQRModal(entry) {
   const voucher = entry.vouchers[0];
-  const lnurl = entry.type === 'single' ? voucher.fund_lnurl : voucher.batch_fund_lnurl;
+  const lnurl = voucher.fund_lnurl;
   const container = $('modal-qr-container');
   renderQR(container, lnurl, 240);
   container.style.cursor = 'pointer';
   container.title = 'Tap to open in wallet';
   container.onclick = () => { window.location.href = 'lightning:' + lnurl; };
-  $('modal-title').textContent = entry.type === 'single' ? 'Fund Voucher' : 'Fund Batch';
+  $('modal-title').textContent = 'Fund Voucher';
 
   const lnurlEl = $('modal-lnurl-text');
   lnurlEl.textContent = 'Copy Funding Code';
@@ -2994,11 +1622,6 @@ function showScreen(id) {
   if (id !== 'screen-settings') stopSettingsPoller();
 }
 
-function showTab(tab) {
-  state.activeTab = tab;
-  document.querySelectorAll('.tab-btn').forEach(b => b.classList.toggle('active', b.dataset.tab === tab));
-  document.querySelectorAll('.tab-pane').forEach(p => p.classList.toggle('active', p.id === `tab-${tab}`));
-}
 
 // ── Onboarding ────────────────────────────────────────────────────────────────
 function decodeLNURL(str) {
@@ -3234,10 +1857,13 @@ async function refreshWalletBalance() {
   let wvOrigin;
   try { wvOrigin = new URL(wv.fund_url_prefix).origin; } catch { wvOrigin = new URL(_serverURL).origin; }
   try {
-    const res = await fetch(`${wvOrigin}/voucher/status/${wv.pubkey}`);
+    const res = await fetch(`${wvOrigin}/status`, {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ pubkeys: [wv.pubkey] }),
+    });
     if (!res.ok) return 0;
-    const data = await res.json();
-    if (!data.active) {
+    const data = (await res.json())[wv.pubkey];
+    if (!data || !data.active) {
       removeWalletVoucher(wvOrigin);
       if (pill) pill.classList.add('hidden');
       return 0;
@@ -3319,10 +1945,13 @@ async function renderSettingsWalletSection() {
 
     let expiresAt = 0;
     try {
-      const res = await fetch(`${wvOrigin}/voucher/status/${wv.pubkey}`);
+      const res = await fetch(`${wvOrigin}/status`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pubkeys: [wv.pubkey] }),
+      });
       if (res.ok) {
-        const data = await res.json();
-        if (!data.active) {
+        const data = (await res.json())[wv.pubkey];
+        if (!data || !data.active) {
           removeWalletVoucher(wvOrigin);
           createDiv.classList.remove('hidden');
           activeDiv.classList.add('hidden');
@@ -3356,10 +1985,13 @@ async function renderSettingsWalletSection() {
   const rows = await Promise.all(otherEntries.map(async ([origin, v]) => {
     let sats = '—';
     try {
-      const res = await fetch(`${origin}/voucher/status/${v.pubkey}`);
+      const res = await fetch(`${origin}/status`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pubkeys: [v.pubkey] }),
+      });
       if (res.ok) {
-        const d = await res.json();
-        if (!d.active) { removeWalletVoucher(origin); return null; }
+        const d = (await res.json())[v.pubkey];
+        if (!d || !d.active) { removeWalletVoucher(origin); return null; }
         sats = Math.floor((d.raw_balance_msat || 0) / 1000).toLocaleString();
       }
     } catch {}
@@ -3401,7 +2033,6 @@ async function createWalletVoucher() {
 
   try {
     const vouchers = await createVouchers({
-      batch_name: 'Wallet',
       pub_keys: [pubKey],
       refund_code: refundCode,
       refund_after_seconds: _walletExpiry,
@@ -3514,11 +2145,7 @@ async function doWalletTransfer(voucher) {
   btn.textContent = 'Funding…';
 
   try {
-    const res = await fetch(_serverURL + '/transfer', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ secret: wv.secret, pub_key: voucher.pubkey, amount: amountSats * 1000 }),
-    });
+    const res = await fetch(`${_serverURL}/transfer/${wv.secret}/${voucher.pubkey}?amount=${amountSats * 1000}`);
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || `Transfer failed (${res.status})`);
@@ -3536,32 +2163,8 @@ async function doWalletTransfer(voucher) {
   }
 }
 
-function initBatchPills() {
-  document.querySelectorAll('#batch-count-pills .pill-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#batch-count-pills .pill-btn')
-        .forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      _batchCount = parseInt(btn.dataset.count, 10);
-    });
-  });
-  document.querySelectorAll('#batch-expiry-pills .pill-btn').forEach(btn => {
-    btn.addEventListener('click', () => {
-      document.querySelectorAll('#batch-expiry-pills .pill-btn')
-        .forEach(b => b.classList.remove('active'));
-      btn.classList.add('active');
-      _batchExpiry = parseInt(btn.dataset.secs, 10);
-    });
-  });
-}
-
 // ── Init ──────────────────────────────────────────────────────────────────────
 async function init() {
-  // Tab switching
-  document.querySelectorAll('.tab-btn').forEach(btn => {
-    btn.addEventListener('click', () => showTab(btn.dataset.tab));
-  });
-
   // Onboarding
   $('btn-onboarding-submit').addEventListener('click', handleOnboardingSubmit);
   $('refund-code-input').addEventListener('keydown', e => { if (e.key === 'Enter') handleOnboardingSubmit(); });
@@ -3598,10 +2201,6 @@ async function init() {
     if (e.key === 'Enter') { e.preventDefault(); handleCreateSingle(); }
   });
 
-  // Batch vouchers
-  $('btn-create-batch').addEventListener('click', handleCreateBatch);
-  $('batch-name').addEventListener('keydown', e => { if (e.key === 'Enter') handleCreateBatch(); });
-
   // ── Burger menu ──────────────────────────────────────────────────────────
   const navMenuBtn = $('nav-menu');
   const navMenuDropdown = $('nav-menu-dropdown');
@@ -3634,11 +2233,6 @@ async function init() {
 
   $('menu-history').addEventListener('click', goHistory);
 
-  $('menu-leaderboard').addEventListener('click', () => {
-    navMenuDropdown.classList.add('hidden');
-    showScreen('screen-leaderboard');
-    renderLeaderboardScreen($('leaderboard-content'));
-  });
 
   $('menu-settings').addEventListener('click', () => {
     navMenuDropdown.classList.add('hidden');
@@ -3654,9 +2248,6 @@ async function init() {
     showScreen(localStorage.getItem(LS_REFUND) ? 'screen-app' : 'screen-onboarding');
   });
 
-  $('nav-back-from-leaderboard').addEventListener('click', () => {
-    showScreen(localStorage.getItem(LS_REFUND) ? 'screen-app' : 'screen-onboarding');
-  });
 
   $('nav-back-from-settings').addEventListener('click', () => {
     showScreen(localStorage.getItem(LS_REFUND) ? 'screen-app' : 'screen-onboarding');
@@ -3679,8 +2270,11 @@ async function init() {
     let balanceMsat = 0;
     try {
       const wvOrigin = new URL(wv.fund_url_prefix).origin;
-      const res = await fetch(`${wvOrigin}/voucher/status/${wv.pubkey}`);
-      if (res.ok) { const d = await res.json(); balanceMsat = d.balance_msat || 0; }
+      const res = await fetch(`${wvOrigin}/status`, {
+        method: 'POST', headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ pubkeys: [wv.pubkey] }),
+      });
+      if (res.ok) { const d = (await res.json())[wv.pubkey]; balanceMsat = (d && d.balance_msat) || 0; }
     } catch {}
 
     const balanceSats = Math.floor(balanceMsat / 1000);
@@ -3737,17 +2331,8 @@ async function init() {
     if (e.target === $('qr-modal')) $('qr-modal').classList.add('hidden');
   });
 
-  // Template preview modal close
-  $('template-preview-close').addEventListener('click', () => $('template-preview-modal').classList.add('hidden'));
-  $('template-preview-modal').addEventListener('click', e => {
-    if (e.target === $('template-preview-modal')) $('template-preview-modal').classList.add('hidden');
-  });
-
   // Back buttons in single wizard
   $('btn-back-step2').addEventListener('click', () => { stopFundingPoll(); showStep(1); });
-
-  // Batch pill pickers
-  initBatchPills();
 
   // Detect dial code and populate
   initSingleStep1();
@@ -3758,12 +2343,6 @@ async function init() {
   const logoEl = document.getElementById('app-logo');
   if (logoEl) logoEl.innerHTML = '⚡ ' + _siteLogoInner;
   document.querySelectorAll('.js-site-name').forEach(el => { el.textContent = _siteName; });
-  if (_batchEnabled) {
-    document.querySelectorAll('.tab-btn[data-tab="batch"]').forEach(btn => {
-      btn.removeAttribute('disabled');
-      btn.textContent = 'Batch';
-    });
-  }
   if (_githubURL) {
     const ghEl = document.getElementById('footer-github');
     const ghAboutEl = document.getElementById('about-github-link');
