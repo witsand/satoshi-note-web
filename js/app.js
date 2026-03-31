@@ -1610,6 +1610,9 @@ async function doHistoryTransfer(voucher, amtEl, errEl, wv, transferOrigin, isSa
 // ── Delete history entry ──────────────────────────────────────────────────────
 
 let _pendingDeleteId = null;
+let _pendingDisableWv = null;
+let _pendingDisableBalanceMsat = 0;
+let _pendingRemoveOrigin = null;
 
 function promptDeleteHistoryEntry(id) {
   _pendingDeleteId = id;
@@ -2082,6 +2085,7 @@ async function renderSettingsWalletSection() {
 
   const rows = await Promise.all(otherEntries.map(async ([origin, v]) => {
     let sats = '—';
+    let balanceMsat = 0;
     try {
       const res = await fetch(`${origin}/status`, {
         method: 'POST', headers: { 'Content-Type': 'application/json' },
@@ -2091,6 +2095,7 @@ async function renderSettingsWalletSection() {
         const d = (await res.json())[v.pubkey];
         if (!d || !d.active) { removeWalletVoucher(origin); return null; }
         sats = Math.floor((d.raw_balance_msat || 0) / 1000).toLocaleString();
+        balanceMsat = d.balance_msat || d.raw_balance_msat || 0;
       }
     } catch {}
     const host = (() => { try { return new URL(origin).hostname; } catch { return origin; } })();
@@ -2099,7 +2104,7 @@ async function renderSettingsWalletSection() {
         <div style="font-size:0.8rem;font-weight:600;color:var(--text);">${host}</div>
         <div style="font-size:0.75rem;color:var(--text-muted);">${sats} sats</div>
       </div>
-      <button class="btn btn-ghost btn-sm" data-remove-wallet-origin="${origin}">Remove</button>
+      <button class="btn btn-ghost btn-sm" data-remove-wallet-origin="${origin}" data-remove-wallet-balance="${balanceMsat}">Remove</button>
     </div>`;
   }));
 
@@ -2109,8 +2114,25 @@ async function renderSettingsWalletSection() {
   othersEl.innerHTML = `<div style="margin-top:16px;font-size:0.75rem;font-weight:700;text-transform:uppercase;letter-spacing:0.8px;color:var(--orange);margin-bottom:4px;">Other Server Wallets</div>${validRows.join('')}`;
   othersEl.querySelectorAll('[data-remove-wallet-origin]').forEach(btn => {
     btn.addEventListener('click', () => {
-      removeWalletVoucher(btn.dataset.removeWalletOrigin);
-      renderSettingsWalletSection();
+      const origin = btn.dataset.removeWalletOrigin;
+      const balanceMsat = parseInt(btn.dataset.removeWalletBalance || '0', 10);
+      const wv = getWalletVouchers()[origin] || null;
+      _pendingDisableWv = wv;
+      _pendingDisableBalanceMsat = balanceMsat;
+      _pendingRemoveOrigin = origin;
+      const msgEl = $('disable-voucher-msg');
+      const confirmBtn = $('btn-disable-voucher-confirm');
+      const balanceSats = Math.floor(balanceMsat / 1000);
+      const refundCode = localStorage.getItem(LS_REFUND);
+      if (balanceSats > 0 && refundCode) {
+        msgEl.textContent = `This wallet has ${balanceSats.toLocaleString()} sats. They will be sent to ${refundCode} before removing.`;
+      } else if (balanceSats > 0) {
+        msgEl.textContent = `This wallet has ${balanceSats.toLocaleString()} sats. No Lightning address is set \u2014 balance may be lost. Remove anyway?`;
+      } else {
+        msgEl.textContent = 'This will remove this wallet voucher.';
+      }
+      confirmBtn.textContent = 'Remove';
+      $('disable-voucher-modal').classList.remove('hidden');
     });
   });
 }
@@ -2375,9 +2397,15 @@ async function init() {
       if (res.ok) { const d = (await res.json())[wv.pubkey]; balanceMsat = (d && d.balance_msat) || 0; }
     } catch {}
 
+    _pendingDisableWv = wv;
+    _pendingDisableBalanceMsat = balanceMsat;
+
     const balanceSats = Math.floor(balanceMsat / 1000);
-    if (balanceSats > 0) {
-      msgEl.textContent = `Your local voucher has ${balanceSats.toLocaleString()} sats. These will be refunded to the Lightning address that was registed when it was first created as soon as it expires. Disable anyway?`;
+    const refundCode = localStorage.getItem(LS_REFUND);
+    if (balanceSats > 0 && refundCode) {
+      msgEl.textContent = `Your local voucher has ${balanceSats.toLocaleString()} sats. They will be sent to ${refundCode} before disabling.`;
+    } else if (balanceSats > 0) {
+      msgEl.textContent = `Your local voucher has ${balanceSats.toLocaleString()} sats. No Lightning address is set — balance may be lost. Disable anyway?`;
     } else {
       msgEl.textContent = 'This will remove your local voucher. You can create a new one at any time.';
     }
@@ -2385,19 +2413,51 @@ async function init() {
     modal.classList.remove('hidden');
   });
 
+  function _resetDisableModal() {
+    _pendingDisableWv = null;
+    _pendingDisableBalanceMsat = 0;
+    _pendingRemoveOrigin = null;
+    $('btn-disable-voucher-confirm').textContent = 'Disable';
+  }
+
   $('btn-disable-voucher-cancel').addEventListener('click', () => {
     $('disable-voucher-modal').classList.add('hidden');
+    _resetDisableModal();
   });
 
-  $('btn-disable-voucher-confirm').addEventListener('click', () => {
-    $('disable-voucher-modal').classList.add('hidden');
-    removeWalletVoucher(new URL(_serverURL).origin);
+  $('btn-disable-voucher-confirm').addEventListener('click', async () => {
+    const modal = $('disable-voucher-modal');
+    const confirmBtn = $('btn-disable-voucher-confirm');
+    const refundCode = localStorage.getItem(LS_REFUND);
+
+    if (_pendingDisableBalanceMsat > 0 && refundCode && _pendingDisableWv) {
+      confirmBtn.disabled = true;
+      confirmBtn.textContent = 'Sending\u2026';
+      try {
+        const wvOrigin = new URL(_pendingDisableWv.fund_url_prefix).origin;
+        await window.redeemToLightningAddress({
+          serverURL: wvOrigin,
+          secret: _pendingDisableWv.secret,
+          balanceMsat: _pendingDisableBalanceMsat,
+          lnInput: refundCode,
+        });
+      } catch (_) { /* proceed with removal even if send fails */ }
+      confirmBtn.disabled = false;
+    }
+
+    const originToRemove = _pendingRemoveOrigin || new URL(_serverURL).origin;
+    modal.classList.add('hidden');
+    _resetDisableModal();
+    removeWalletVoucher(originToRemove);
     refreshWalletBalance();
     renderSettingsWalletSection();
   });
 
   $('disable-voucher-modal').addEventListener('click', e => {
-    if (e.target === $('disable-voucher-modal')) $('disable-voucher-modal').classList.add('hidden');
+    if (e.target === $('disable-voucher-modal')) {
+      $('disable-voucher-modal').classList.add('hidden');
+      _resetDisableModal();
+    }
   });
 
   // Delete history entry modal

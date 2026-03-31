@@ -12,7 +12,7 @@
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/css/style.css?v=65">
+  <link rel="stylesheet" href="/css/style.css?v=67">
   <style>
     .section-label {
       font-size: 0.7rem;
@@ -46,6 +46,22 @@
   </style>
 </head>
 <body>
+
+<!-- ── Lightning Address / LNURL Pay modal ──────────────────────────────────── -->
+<div id="lnaddr-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
+  <div class="modal-box" style="text-align:left;">
+    <div class="modal-title">Send to Lightning Address</div>
+    <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:14px;">
+      Enter a Lightning address or LNURL pay code to receive the sats directly to your wallet.
+    </p>
+    <input id="lnaddr-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
+      placeholder="user@domain.com  or  LNURL1…"
+      style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-size:0.9rem;margin-bottom:10px;outline:none;">
+    <div id="lnaddr-status" style="font-size:0.8rem;min-height:1.2em;margin-bottom:10px;"></div>
+    <button id="lnaddr-submit" class="btn btn-primary" style="width:100%;margin-bottom:8px;">Send Sats</button>
+    <button id="lnaddr-close" class="modal-close">Cancel</button>
+  </div>
+</div>
 
 <!-- ── Sats info modal ──────────────────────────────────────────────────────── -->
 <div id="sats-info-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
@@ -93,7 +109,8 @@
 
 <script src="/js/config.js"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/js/wallet-picker.js?v=65"></script>
+<script src="/js/wallet-picker.js?v=67"></script>
+<script src="/js/lnaddr-redeem.js"></script>
 <script>
 (function () {
   'use strict';
@@ -143,8 +160,8 @@
                   <a class="wallet-link" href="https://apps.apple.com/us/app/blink-bitcoin-wallet/id1531383905" target="_blank" rel="noopener">App Store</a>
                 </div>
               </li>
-              <li><strong>Open the app</strong>Tap "Create new account" -> "Accept" -> "SMS" -> "Use SMS"</li>
-              <li><strong>Enter your phone number</strong>Tap "Send via SMS". This is your backup. Confirm the 6 digit code.</li>
+              <li><strong>Open the app</strong>Tap "Create new account" -> "Accept"</li>
+              <li><strong>Enter your phone number (optional)</strong>"SMS" -> "Use SMS" -> Enter number -> Tap "Send via SMS". This is your backup. Confirm the 6 digit code.</li>
               <li><strong>Come back here</strong>Tap the QR code above. This will open Blink and allow you to redeem the bitcoin ⚡</li>
             </ol>
           </div>
@@ -535,6 +552,7 @@
           <!-- FRONT FACE -->
           <div class="redeem-card-face redeem-card-front card" style="position:relative;overflow:hidden;text-align:center;background:linear-gradient(160deg,#2a1f0e 0%,#1a1a1a 55%);border:1px solid rgba(247,147,26,0.25);animation:hc-card-glow-orange 4s ease-in-out infinite,hc-card-flip-in 0.45s ease-out both;padding-bottom:20px;">
             <div class="hc-sticker" id="redeem-sticker">VOUCHER</div>
+            <button id="btn-lnaddr" title="Send to Lightning address" style="position:absolute;top:12px;left:12px;background:rgba(247,147,26,0.1);border:1.5px solid rgba(247,147,26,0.3);border-radius:8px;width:32px;height:32px;font-size:1rem;font-weight:700;color:var(--orange);cursor:pointer;line-height:1;padding:0;z-index:2;">@</button>
             ${confettiHTML}
 
             <!-- Expiry centered below header -->
@@ -620,6 +638,54 @@
     });
     document.getElementById('sats-info-modal').addEventListener('click', function (e) {
       if (e.target === this) this.classList.add('hidden');
+    });
+
+    // ── Lightning Address / LNURL Pay ─────────────────────────────────────
+    document.getElementById('btn-lnaddr').addEventListener('click', function () {
+      const inp = document.getElementById('lnaddr-input');
+      if (!inp.value) {
+        const saved = localStorage.getItem('sn_refund_code') || '';
+        if (saved) inp.value = saved;
+      }
+      document.getElementById('lnaddr-modal').classList.remove('hidden');
+      inp.focus();
+    });
+    document.getElementById('lnaddr-close').addEventListener('click', function () {
+      document.getElementById('lnaddr-modal').classList.add('hidden');
+    });
+    document.getElementById('lnaddr-modal').addEventListener('click', function (e) {
+      if (e.target === this) this.classList.add('hidden');
+    });
+    document.getElementById('lnaddr-input').addEventListener('keydown', function (e) {
+      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('lnaddr-submit').click(); }
+    });
+    document.getElementById('lnaddr-submit').addEventListener('click', async function () {
+      const input = document.getElementById('lnaddr-input').value.trim();
+      const statusEl = document.getElementById('lnaddr-status');
+      const submitBtn = document.getElementById('lnaddr-submit');
+      if (!input) {
+        statusEl.style.color = 'var(--text-muted)';
+        statusEl.textContent = 'Please enter a Lightning address or LNURL pay code.';
+        return;
+      }
+      submitBtn.disabled = true;
+      statusEl.style.color = 'var(--text-muted)';
+      try {
+        await window.redeemToLightningAddress({
+          serverURL, secret, balanceMsat: balance_msat, lnInput: input,
+          onStatus: msg => { statusEl.textContent = msg; },
+        });
+        document.getElementById('lnaddr-modal').classList.add('hidden');
+        const celEl = document.getElementById('redeem-celebration');
+        if (celEl) celEl.textContent = '\u26A1 Payment sent! Waiting for confirmation\u2026';
+        if (!pollInterval) pollInterval = startRedemptionPoll();
+        statusEl.textContent = '';
+        submitBtn.disabled = false;
+      } catch (err) {
+        statusEl.style.color = 'var(--red, #e05252)';
+        statusEl.textContent = err.message || 'Something went wrong. Please try again.';
+        submitBtn.disabled = false;
+      }
     });
 
     // ── Expiry countdown ─────────────────────────────────────────────────
