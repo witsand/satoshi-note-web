@@ -258,7 +258,7 @@ function resolveServerURL() {
 const _serverURL = resolveServerURL();
 
 // ── Config + crypto helpers ───────────────────────────────────────────────────
-let _randomBytesLength = 16; // safe fallback within server's accepted 16–32 range
+let _randomBytesLength = (typeof window.DEFAULT_RANDOM_BYTES_LENGTH === 'number') ? window.DEFAULT_RANDOM_BYTES_LENGTH : 16;
 
 // Build logo HTML from a CamelCase name: words alternate orange/white starting with orange.
 // e.g. 'SatoshiNote' → 'Satoshi<span>Note</span>'
