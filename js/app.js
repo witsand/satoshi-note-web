@@ -1601,6 +1601,7 @@ async function doHistoryTransfer(voucher, amtEl, errEl, wv, transferOrigin, isSa
   } catch (err) {
     errEl.textContent = err.message;
     errEl.classList.add('visible');
+  } finally {
     btn.disabled = false;
     btn.textContent = 'Fund Voucher';
   }
