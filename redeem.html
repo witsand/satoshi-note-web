@@ -8,11 +8,11 @@
   <meta property="og:type" content="website">
   <meta property="og:title" content="You've received Bitcoin! ⚡">
   <meta property="og:description" content="Someone sent you a Lightning voucher. Claim it instantly with a Bitcoin wallet — no account needed.">
-  <meta property="og:image" content="/icon-512.png">
+  <meta property="og:image" content="https://sendsats.co.za/icon-512.png">
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/css/style.css?v=57">
+  <link rel="stylesheet" href="/css/style.css?v=60">
   <style>
     .section-label {
       font-size: 0.7rem;
@@ -93,7 +93,7 @@
 
 <script src="/js/config.js"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/js/wallet-picker.js?v=57"></script>
+<script src="/js/wallet-picker.js?v=60"></script>
 <script>
 (function () {
   'use strict';
@@ -104,17 +104,15 @@
   const lnurl = rawLnurl.match(/LNURL1[A-Z02-9]+/i)?.[0]?.toUpperCase() || rawLnurl;
   const main = document.getElementById('redeem-main');
 
-  // ── Apply site name from config.js ───────────────────────────────────────
-  (function () {
-    const cfgName = (window.SATOSHI_NOTE_SITE_NAME || '').trim();
-    if (!cfgName) return;
-    const words = cfgName.split(/(?=[A-Z])/).filter(w => w.length > 0);
-    const siteName = words.join(' ');
+  // ── Apply site name from manifest.json ──────────────────────────────────
+  fetch('/manifest.json').then(r => r.ok ? r.json() : null).then(m => {
+    if (!m || !m.name) return;
+    const words = m.name.split(' ').filter(w => w.length > 0);
     const logoInner = words.map((w, i) => i % 2 === 0 ? w : '<span>' + w + '</span>').join('');
-    document.title = 'Claim Your Voucher \u2014 ' + siteName;
+    document.title = 'Claim Your Voucher \u2014 ' + m.name;
     const logoEl = document.getElementById('app-logo');
     if (logoEl) logoEl.innerHTML = '\u26A1 ' + logoInner;
-  })();
+  }).catch(() => {});
 
   // ── Unified "Learn More" info card (accordion) ───────────────────────────
   function buildInfoCard(openDefault) {
@@ -428,9 +426,12 @@
     let status = null;
     for (const candidate of uniqueServers) {
       try {
-        const resp = await fetch(candidate + '/voucher/status/' + pk);
+        const resp = await fetch(candidate + '/status', {
+          method: 'POST', headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify({ pubkeys: [pk] }),
+        });
         if (resp.ok) {
-          status = await resp.json();
+          status = (await resp.json())[pk];
           serverURL = candidate; // update so polling uses the working server
           break;
         }
@@ -678,9 +679,12 @@
       return setInterval(async function () {
         try {
           const pk = await secretToPubKey(secret);
-          const r = await fetch(serverURL + '/voucher/status/' + pk);
+          const r = await fetch(serverURL + '/status', {
+            method: 'POST', headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ pubkeys: [pk] }),
+          });
           if (!r.ok) return;
-          const s = await r.json();
+          const s = (await r.json())[pk];
           if (s.active) return;
           clearInterval(pollInterval);
           pollInterval = null;

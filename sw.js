@@ -7,9 +7,9 @@
 const CACHE = 'sn-v26';
 
 const PRECACHE = [
-  '/css/style.css?v=57',
-  '/js/app.js?v=57',
-  '/js/wallet-picker.js?v=57',
+  '/css/style.css?v=60',
+  '/js/app.js?v=60',
+  '/js/wallet-picker.js?v=60',
   '/js/qrcode.min.js',
   '/icon-192.png',
   '/icon-512.png',

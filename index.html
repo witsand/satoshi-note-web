@@ -5,10 +5,18 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Satoshi Note</title>
   <meta name="description" content="Send Bitcoin Lightning vouchers to anyone via WhatsApp.">
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="SendSats">
+  <meta property="og:description" content="Send Bitcoin Lightning vouchers to anyone.">
+  <meta property="og:image" content="https://sendsats.co.za/icon-512.png">
+  <meta property="og:image:type" content="image/png">
+  <meta property="og:image:width" content="512">
+  <meta property="og:image:height" content="512">
+  <meta name="twitter:card" content="summary">
   <link rel="manifest" href="/manifest.json">
   <link rel="apple-touch-icon" href="/apple-touch-icon.png">
   <meta name="theme-color" content="#F7931A">
-  <link rel="stylesheet" href="/css/style.css?v=57">
+  <link rel="stylesheet" href="/css/style.css?v=60">
 </head>
 <body>
 
@@ -72,7 +80,6 @@
       <div id="header-server-host" style="font-size:0.75rem;color:var(--text-muted);letter-spacing:0.2px;line-height:1.3;word-break:break-all;"></div>
     </div>
     <button id="menu-history"     class="menu-item">🗒️ History</button>
-    <button id="menu-leaderboard" class="menu-item">🏆 Leaderboard</button>
     <button id="menu-settings"    class="menu-item">⚙️ Settings</button>
   </div>
 
@@ -141,15 +148,8 @@
     <!-- ── Main app screen ──────────────────────────────────────────────────── -->
     <section id="screen-app" class="screen">
 
-      <!-- Tabs -->
-      <div class="tabs">
-        <button class="tab-btn active" data-tab="single">Single</button>
-        <button class="tab-btn" data-tab="batch" disabled>Multi - Coming soon</button>
-        <button class="tab-btn" data-tab="batch" disabled>Batch - Coming soon</button>
-      </div>
-
-      <!-- ── Tab: Single Voucher ─────────────────────────────────────────────── -->
-      <div id="tab-single" class="tab-pane active">
+      <!-- ── Single Voucher ───────────────────────────────────────────────────── -->
+      <div id="tab-single">
 
         <!-- Step dots -->
         <div class="step-indicator">
@@ -318,79 +318,6 @@
 
       </div><!-- /tab-single -->
 
-      <!-- ── Tab: Batch ──────────────────────────────────────────────────────── -->
-      <div id="tab-batch" class="tab-pane">
-
-        <!-- Batch form -->
-        <div id="batch-form">
-          <div class="card">
-            <p class="card-title">Batch details</p>
-
-            <div class="form-group">
-              <label for="batch-name">Batch name (optional)</label>
-              <input type="text" id="batch-name" placeholder="e.g. Christmas 2026">
-            </div>
-
-            <div class="form-group">
-              <label>Number of vouchers</label>
-              <div class="pill-group" id="batch-count-pills">
-                <button type="button" class="pill-btn" data-count="2">2</button>
-                <button type="button" class="pill-btn active" data-count="8">8</button>
-                <button type="button" class="pill-btn" data-count="32">32</button>
-                <button type="button" class="pill-btn" data-count="64">64</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <label>Refund after</label>
-              <div class="pill-group" id="batch-expiry-pills">
-                <button type="button" class="pill-btn" data-secs="259200">3 days</button>
-                <button type="button" class="pill-btn active" data-secs="1209600">2 weeks</button>
-                <button type="button" class="pill-btn" data-secs="2592000">1 month</button>
-                <button type="button" class="pill-btn" data-secs="7776000">3 months</button>
-              </div>
-            </div>
-
-            <div class="form-group">
-              <div class="checkbox-row">
-                <input type="checkbox" id="batch-single-use" checked>
-                <label for="batch-single-use">Single use vouchers</label>
-              </div>
-            </div>
-
-            <div id="batch-error" class="error-msg"></div>
-          </div>
-
-          <button id="btn-create-batch" class="btn btn-primary">Create Vouchers</button>
-        </div>
-
-        <!-- Batch results (template picker + fund QR) -->
-        <div id="batch-results" class="hidden">
-          <div class="card">
-            <p class="card-title">Choose a template</p>
-            <p class="template-hint">Select a design for your printed vouchers.</p>
-            <div id="template-grid" class="template-grid"></div>
-          </div>
-          <div class="btn-group">
-            <button id="btn-print-vouchers" class="btn btn-primary">Print Vouchers</button>
-          </div>
-
-          <div class="card" style="margin-top:16px;">
-            <p class="card-title">Fund all vouchers</p>
-            <div class="qr-wrapper">
-              <div id="batch-qr-container" class="qr-container"></div>
-              <p id="batch-lnurl-text" class="qr-lnurl"></p>
-            </div>
-          </div>
-          <div class="notice" id="batch-fund-note">This funds all vouchers equally.</div>
-
-          <div class="btn-group">
-            <button id="btn-done-batch" class="btn btn-ghost">Done</button>
-          </div>
-        </div>
-
-      </div><!-- /tab-batch -->
-
     </section><!-- /screen-app -->
 
     <!-- ── History screen ────────────────────────────────────────────────────── -->
@@ -402,14 +329,6 @@
       <div id="history-list"></div>
     </section>
 
-    <!-- ── Leaderboard screen ──────────────────────────────────────────────────── -->
-    <section id="screen-leaderboard" class="screen">
-      <div class="section-header">
-        <h2 class="section-title">Leaderboard</h2>
-        <button id="nav-back-from-leaderboard" class="btn btn-secondary btn-sm">← Back</button>
-      </div>
-      <div id="leaderboard-content"></div>
-    </section>
 
     <!-- ── Settings screen ────────────────────────────────────────────────────── -->
     <section id="screen-settings" class="screen">
@@ -702,10 +621,10 @@
 
 <!-- ── Print area ─────────────────────────────────────────────────────────────── -->
 <div id="print-area" style="display:none;"></div>
-<script src="/js/config.js?v=57"></script>
+<script src="/js/config.js?v=60"></script>
 <script src="/js/qrcode.min.js"></script>
-<script src="/js/wallet-picker.js?v=57"></script>
-<script src="/js/app.js?v=57"></script>
+<script src="/js/wallet-picker.js?v=60"></script>
+<script src="/js/app.js?v=60"></script>
 <script>
 (function () {
   'use strict';

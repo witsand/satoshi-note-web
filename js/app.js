@@ -263,28 +263,32 @@ let _randomBytesLength = 16; // safe fallback within server's accepted 16–32 r
 // Build logo HTML from a CamelCase name: words alternate orange/white starting with orange.
 // e.g. 'SatoshiNote' → 'Satoshi<span>Note</span>'
 function _buildSiteLogoInner(name) {
-  const words = name.split(/(?=[A-Z])/).filter(w => w.length > 0);
+  const words = name.split(' ').filter(w => w.length > 0);
   if (!words.length) return name;
   return words.map((w, i) => i % 2 === 0 ? w : '<span>' + w + '</span>').join('');
 }
 
-const _cfgName = (window.SATOSHI_NOTE_SITE_NAME || '').trim();
-let _siteName = _cfgName
-  ? _cfgName.split(/(?=[A-Z])/).filter(w => w.length > 0).join(' ')
-  : 'Satoshi Note';
-let _siteLogoInner = _cfgName ? _buildSiteLogoInner(_cfgName) : 'Satoshi<span>Note</span>';
+let _siteName = 'Satoshi Note';
+let _siteLogoInner = 'Satoshi<span>Note</span>';
 let _githubURL = '';
 let _donateLNURL = '';
 let _defaultDialCode = (window.DEFAULT_DIAL_CODE ? '+' + window.DEFAULT_DIAL_CODE : '+27');
 const _configReady = (async () => {
   try {
-    const res = await fetch(_serverURL + '/config');
-    if (res.ok) {
-      const d = await res.json();
+    const [configRes, manifestRes] = await Promise.all([
+      fetch(_serverURL + '/config').catch(() => null),
+      fetch('/manifest.json').catch(() => null)
+    ]);
+    if (manifestRes && manifestRes.ok) {
+      const m = await manifestRes.json();
+      if (m.name) { _siteName = m.name; _siteLogoInner = _buildSiteLogoInner(m.name); }
+    }
+    if (configRes && configRes.ok) {
+      const d = await configRes.json();
       if (typeof d.random_bytes_length === 'number') _randomBytesLength = d.random_bytes_length;
       if (typeof d.min_fund_amount_msat === 'number') _minFundAmountMsat = d.min_fund_amount_msat;
-      if (!_cfgName && d.site_name)       _siteName = d.site_name;
-      if (!_cfgName && d.site_logo_inner) _siteLogoInner = d.site_logo_inner;
+      if (d.site_name)       _siteName = d.site_name;
+      if (d.site_logo_inner) _siteLogoInner = d.site_logo_inner;
       if (d.github_url)      _githubURL = d.github_url;
       if (d.donate_lnurl)    _donateLNURL = d.donate_lnurl;
     }
