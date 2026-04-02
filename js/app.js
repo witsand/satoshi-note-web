@@ -1553,7 +1553,11 @@ async function doHistoryTransfer(voucher, amtEl, errEl, wv, transferOrigin, isSa
   btn.textContent = 'Funding…';
 
   try {
-    const res = await fetch(`${transferOrigin}/transfer/${wv.secret}/${voucher.pubkey}?amount=${amountSats * 1000}`);
+    const res = await fetch(`${transferOrigin}/transfer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: wv.secret, pub_key: voucher.pubkey, amount_msat: amountSats * 1000 }),
+    });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || `Transfer failed (${res.status})`);
@@ -2243,7 +2247,11 @@ async function doWalletTransfer(voucher) {
   btn.textContent = 'Funding…';
 
   try {
-    const res = await fetch(`${_serverURL}/transfer/${wv.secret}/${voucher.pubkey}?amount=${amountSats * 1000}`);
+    const res = await fetch(`${_serverURL}/transfer`, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({ secret: wv.secret, pub_key: voucher.pubkey, amount_msat: amountSats * 1000 }),
+    });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
       throw new Error(data.error || `Transfer failed (${res.status})`);
