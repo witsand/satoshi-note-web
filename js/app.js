@@ -1560,7 +1560,7 @@ async function doHistoryTransfer(voucher, amtEl, errEl, wv, transferOrigin, isSa
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      throw new Error(data.error || `Transfer failed (${res.status})`);
+      throw new Error(data.reason || `Transfer failed (${res.status})`);
     }
     if (isSameServer !== false) await refreshWalletBalance();
     saveWalletAmount(amountSats);
@@ -2254,7 +2254,7 @@ async function doWalletTransfer(voucher) {
     });
     if (!res.ok) {
       const data = await res.json().catch(() => ({}));
-      throw new Error(data.error || `Transfer failed (${res.status})`);
+      throw new Error(data.reason || `Transfer failed (${res.status})`);
     }
     await refreshWalletBalance();
     saveWalletAmount(amountSats);
