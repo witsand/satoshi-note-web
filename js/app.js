@@ -774,7 +774,7 @@ async function handleCreateSingle() {
 
     vouchers[0].secret = secret;
     vouchers[0].claim_lnurl = lnurlEncode(vouchers[0].withdraw_url_prefix + secret);
-    vouchers[0].fund_lnurl = lnurlEncode(vouchers[0].fund_url_prefix + vouchers[0].fund_key);
+    vouchers[0].fund_lnurl = lnurlEncode(vouchers[0].fund_url_prefix + (vouchers[0].fund_key || vouchers[0].pubkey));
     vouchers[0]._fv = APP_FV;
 
     state.vouchers = vouchers;
