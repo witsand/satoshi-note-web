@@ -347,7 +347,7 @@ function rebaseVoucher(v, newOrigin) {
   const oldOrigin = new URL(v.fund_url_prefix).origin;
   v.fund_url_prefix     = v.fund_url_prefix.replace(oldOrigin, newOrigin);
   v.withdraw_url_prefix = v.withdraw_url_prefix.replace(oldOrigin, newOrigin);
-  v.fund_lnurl          = lnurlEncode(v.fund_url_prefix + v.pubkey);
+  v.fund_lnurl          = lnurlEncode(v.fund_url_prefix + (v.fund_key || v.pubkey));
   v.claim_lnurl         = lnurlEncode(v.withdraw_url_prefix + v.secret);
 }
 
@@ -774,7 +774,7 @@ async function handleCreateSingle() {
 
     vouchers[0].secret = secret;
     vouchers[0].claim_lnurl = lnurlEncode(vouchers[0].withdraw_url_prefix + secret);
-    vouchers[0].fund_lnurl = lnurlEncode(vouchers[0].fund_url_prefix + vouchers[0].pubkey);
+    vouchers[0].fund_lnurl = lnurlEncode(vouchers[0].fund_url_prefix + vouchers[0].fund_key);
     vouchers[0]._fv = APP_FV;
 
     state.vouchers = vouchers;
@@ -2048,7 +2048,7 @@ async function renderSettingsWalletSection() {
 
     startWalletCountdown(expiresAt);
 
-    const fundLNURL = lnurlEncode(wv.fund_url_prefix + wv.pubkey);
+    const fundLNURL = lnurlEncode(wv.fund_url_prefix + (wv.fund_key || wv.pubkey));
     const qrEl = $('settings-wallet-qr');
     qrEl.innerHTML = '';
     renderQR(qrEl, fundLNURL, 256);
@@ -2144,6 +2144,7 @@ async function createWalletVoucher() {
     saveWalletVoucher({
       secret,
       pubkey: v.pubkey,
+      fund_key: v.fund_key,
       fund_url_prefix: v.fund_url_prefix,
       withdraw_url_prefix: v.withdraw_url_prefix,
       refund_after_seconds: v.refund_after_seconds,
