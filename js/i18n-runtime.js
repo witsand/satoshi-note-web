@@ -123,7 +123,8 @@
       } else if (obj.text != null) {
         el.textContent = obj.text;
       } else if (obj.html != null && !useHtmlFlag) {
-        el.innerHTML = obj.html;
+        // If markup isn't explicitly allowed on the node, treat any "html" override as plain text.
+        el.textContent = obj.html;
       }
       var attrList = el.getAttribute('data-i18n-attrs');
       if (attrList && typeof attrList === 'string') {
