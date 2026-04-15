@@ -37,9 +37,9 @@ function _getOrCreatePicker() {
   overlay.className = 'wallet-sheet-overlay hidden';
   overlay.innerHTML = `
     <div class="wallet-sheet">
-      <p class="wallet-sheet-title">Which wallet do you use?</p>
+      <p class="wallet-sheet-title" data-i18n="redeem.wallet.which">Which wallet do you use?</p>
       <div class="wallet-options"></div>
-      <button class="wallet-sheet-cancel">Cancel</button>
+      <button type="button" class="wallet-sheet-cancel" data-i18n="redeem.wallet.cancel">Cancel</button>
     </div>`;
 
   overlay.querySelector('.wallet-sheet-cancel').addEventListener('click', () => {
@@ -51,19 +51,54 @@ function _getOrCreatePicker() {
 
   document.body.appendChild(overlay);
   _pickerEl = overlay;
+  _syncPickerChrome(overlay);
   return overlay;
+}
+
+var SN_WALLET_L10N_FALLBACK = {
+  'redeem.wallet.which': 'Which wallet do you use?',
+  'redeem.wallet.cancel': 'Cancel',
+  'redeem.wallet.recommended': 'Recommended',
+  'redeem.wallet.openIn': 'Open in {name}',
+  'redeem.wallet.openInWallet': 'Open in wallet',
+  'redeem.wallet.change': 'change wallet',
+};
+
+function _l10nString(key, fallback) {
+  if (typeof window.snL10nT === 'function') {
+    var v = window.snL10nT(key);
+    if (v !== key) {
+      return v;
+    }
+  }
+  var refEl = document.querySelector('#sn-l10n-refs [data-l10n-ref="' + key + '"]');
+  if (refEl && refEl.textContent) {
+    return refEl.textContent;
+  }
+  if (Object.prototype.hasOwnProperty.call(SN_WALLET_L10N_FALLBACK, key)) {
+    return SN_WALLET_L10N_FALLBACK[key];
+  }
+  return fallback != null ? fallback : key;
+}
+
+function _syncPickerChrome(overlay) {
+  if (typeof window.applyDomI18n === 'function') {
+    window.applyDomI18n(overlay, window.snL10nDict || {});
+  }
 }
 
 function showWalletPicker(onSelect) {
   const overlay = _getOrCreatePicker();
+  _syncPickerChrome(overlay);
   const optionsEl = overlay.querySelector('.wallet-options');
   optionsEl.innerHTML = '';
+  const recLabel = _l10nString('redeem.wallet.recommended', SN_WALLET_L10N_FALLBACK['redeem.wallet.recommended']);
 
   WALLETS.forEach(w => {
     const btn = document.createElement('button');
     btn.className = 'wallet-option';
     btn.innerHTML = w.recommended
-      ? `${w.name} <span style="background:var(--orange);color:#000;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;">Recommended</span>`
+      ? `${w.name} <span style="background:var(--orange);color:#000;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;">${recLabel}</span>`
       : w.name;
     btn.addEventListener('click', () => {
       overlay.classList.add('hidden');
@@ -97,15 +132,19 @@ function attachWalletButton(anchorEl, lnurl) {
 
   const pref = getPreferredWallet();
 
+  const openTpl = _l10nString('redeem.wallet.openIn', SN_WALLET_L10N_FALLBACK['redeem.wallet.openIn']);
+  const openFallback = _l10nString('redeem.wallet.openInWallet', SN_WALLET_L10N_FALLBACK['redeem.wallet.openInWallet']);
+  const changeLbl = _l10nString('redeem.wallet.change', SN_WALLET_L10N_FALLBACK['redeem.wallet.change']);
+
   const walletBtn = document.createElement('button');
   walletBtn.className = 'btn btn-secondary btn-sm wallet-open-btn';
   walletBtn.style.marginTop = '6px';
-  walletBtn.textContent = pref ? `Open in ${pref.name}` : 'Open in wallet';
+  walletBtn.textContent = pref ? openTpl.replace('{name}', pref.name) : openFallback;
 
   const changeLink = document.createElement('a');
   changeLink.href = '#';
   changeLink.className = 'wallet-change-link';
-  changeLink.textContent = pref ? 'change wallet' : '';
+  changeLink.textContent = pref ? changeLbl : '';
 
   walletBtn.addEventListener('click', () => {
     const current = getPreferredWallet();
@@ -114,8 +153,8 @@ function attachWalletButton(anchorEl, lnurl) {
     } else {
       showWalletPicker(w => {
         setPreferredWallet(w.id);
-        walletBtn.textContent = `Open in ${w.name}`;
-        changeLink.textContent = 'change wallet';
+        walletBtn.textContent = openTpl.replace('{name}', w.name);
+        changeLink.textContent = changeLbl;
         window.location.href = 'lightning:' + lnurl;
       });
     }
@@ -125,8 +164,8 @@ function attachWalletButton(anchorEl, lnurl) {
     e.preventDefault();
     showWalletPicker(w => {
       setPreferredWallet(w.id);
-      walletBtn.textContent = `Open in ${w.name}`;
-      changeLink.textContent = 'change wallet';
+      walletBtn.textContent = openTpl.replace('{name}', w.name);
+      changeLink.textContent = changeLbl;
     });
   });
 

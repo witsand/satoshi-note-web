@@ -1,0 +1,11 @@
+{
+  "redeem.meta.pageTitle": {
+    "text": "[TEST LANG] Claim Your Voucher"
+  },
+  "redeem.header.giftLink": {
+    "text": "[TEST LANG] Gift Bitcoin →"
+  },
+  "redeem.modal.lnaddr.title": {
+    "text": "[TEST LANG] Send to Lightning Address"
+  }
+}

@@ -1,0 +1,305 @@
+{
+  "redeem.meta.pageTitle": {
+    "text": "Yithathe ivawusha yakho"
+  },
+  "redeem.meta.description": {
+    "text": "Ufumene ivawusha ye-Bitcoin ye-Lightning. Yithathe ngokukhawuleza usebenzisa isipaji se-Lightning."
+  },
+  "redeem.meta.ogTitle": {
+    "text": "Ufumene iBitcoin! ⚡"
+  },
+  "redeem.meta.ogDescription": {
+    "text": "Kukho umntu ukuthumele ivawusha ye-Lightning. Yithathe ngokukhawuleza ngesipaji se-Bitcoin — awudingiyo i-akhawunti."
+  },
+  "redeem.modal.lnaddr.title": {
+    "text": "Thumela kwidilesi ye-Lightning"
+  },
+  "redeem.modal.lnaddr.body": {
+    "text": "Faka idilesi ye-Lightning okanye ikhowudi yentlawulo ye-LNURL ukuze ufumane iisathi ngokuthe ngqo esipajini sakho."
+  },
+  "redeem.modal.lnaddr.input": {
+    "placeholder": "umsebenzisi@idomeni.com  okanye  LNURL1…"
+  },
+  "redeem.modal.lnaddr.send": {
+    "text": "Thumela iisathi"
+  },
+  "redeem.modal.lnaddr.cancel": {
+    "text": "Rhoxisa"
+  },
+  "redeem.modal.sats.title": {
+    "text": "Indlela yokuthatha iisathi zakho"
+  },
+  "redeem.modal.sats.whatTitle": {
+    "text": "Ziyintoni iisathi?"
+  },
+  "redeem.modal.sats.whatBody": {
+    "text": "Izasatoshi (\"iisathi\") lilinganiso elincinci le-Bitcoin — njengama-centi ende e-randi.\nKukho i-100 000 000 yeesathi kwi-Bitcoin enye.\nUnokuzigcina, ukwenza ngazo, okanye uzithumele kumntu wonke kwihlabathi ngoko nangoko."
+  },
+  "redeem.modal.sats.howTitle": {
+    "text": "Ndingazithatha njani?"
+  },
+  "redeem.modal.sats.li1": {
+    "html": "<strong style=\"color:var(--text);\">Fumana isipaji se-Bitcoin</strong> — khuphela uBlink (kunconywa kwabaqalayo) kwi-App Store okanye i-Play Store."
+  },
+  "redeem.modal.sats.li2": {
+    "html": "<strong style=\"color:var(--text);\">Cofa \"Bonisa ivawusha\"</strong> kule phepha ukuze ubonise ikhowudi ye-QR."
+  },
+  "redeem.modal.sats.li3": {
+    "html": "<strong style=\"color:var(--text);\">Skena okanye cofa ikhowudi ye-QR</strong> kwisicelo sesipaji sakho ukuze wamkele iisathi."
+  },
+  "redeem.modal.sats.doTitle": {
+    "text": "Ndingenza ntoni ngazo?"
+  },
+  "redeem.modal.sats.doBody": {
+    "text": "Tshata kumashishini amaninzi, hlawula ii-akhawunti, thumela kubahlobo, okanye zigcine njengemali egciniweyo.\nJonga imephu yesipaji engezantsi ngeenkcukacha ezingakumbi."
+  },
+  "redeem.modal.sats.gotIt": {
+    "text": "Ndiyiqondile"
+  },
+  "redeem.header.giftLink": {
+    "text": "Nika iBitcoin →"
+  },
+  "redeem.serverNotice.prefix": {
+    "text": "⚡ Ivawusha ka-"
+  },
+  "redeem.serverNotice.suffix": {
+    "text": " yongezeke kwiluhlu lwakho lweeseva kwingingqi."
+  },
+  "redeem.meta.titleWithApp": {
+    "text": "Yithathe ivawusha yakho —"
+  },
+  "redeem.sticker.invalid": {
+    "text": "AYILUNGANGA"
+  },
+  "redeem.sticker.expired": {
+    "text": "IPHELELWEE"
+  },
+  "redeem.sticker.redeemed": {
+    "text": "SEYICHUKIWE"
+  },
+  "redeem.sticker.notFunded": {
+    "text": "AYINANCEBI"
+  },
+  "redeem.state.invalidTitle": {
+    "text": "Le link ayisebenzi"
+  },
+  "redeem.state.invalidDesc": {
+    "text": "Jonga i-link okanye qhakamshelana nomthumeli."
+  },
+  "redeem.state.expiredTitle": {
+    "text": "Ivawusha iphelelwe"
+  },
+  "redeem.state.expiredDesc": {
+    "text": "Le vawusha iphelelwe phambi kokuba ithathwe. Cela esinye kumthumeli."
+  },
+  "redeem.state.redeemedTitle": {
+    "text": "Sele ichukiwe"
+  },
+  "redeem.state.redeemedDesc": {
+    "text": "Le vawusha sele ichukiwe."
+  },
+  "redeem.state.unfundedTitle": {
+    "text": "Ayikancinzelwanga"
+  },
+  "redeem.state.unfundedDesc": {
+    "text": "Le vawusha ayikancinzelwanga ngeBitcoin. Buyela xa umthumeli eyilayishile."
+  },
+  "redeem.state.checkAgain": {
+    "text": "Jongaphinde"
+  },
+  "redeem.celebration.0": {
+    "text": "Kukho umntu ukuthumele iBitcoin!"
+  },
+  "redeem.celebration.1": {
+    "text": "Isipho oluvela kumhlobo!"
+  },
+  "redeem.celebration.2": {
+    "text": "Ukuhanjiswa kwe-Lightning!"
+  },
+  "redeem.celebration.3": {
+    "text": "Iisathi ziyeza!"
+  },
+  "redeem.celebration.4": {
+    "text": "I-Bitcoin njengesipho!"
+  },
+  "redeem.celebration.5": {
+    "text": "Ivawusha yakho ilindele!"
+  },
+  "redeem.btn.copyClaim": {
+    "text": "Khuphela ikhowudi yokuthatha"
+  },
+  "redeem.btn.copied": {
+    "text": "Ikopiwe!"
+  },
+  "redeem.qr.tapTitle": {
+    "text": "Cofa ukuze uvule kwisipaji"
+  },
+  "redeem.countdown.prefix": {
+    "text": "⏳ Iyaphela ngo "
+  },
+  "redeem.countdown.expiredMessage": {
+    "text": "Le vawusha iphelelwe."
+  },
+  "redeem.claimed.successLine": {
+    "text": "✓ Ichukiwe ngempumelelo!"
+  },
+  "redeem.payment.pendingLine": {
+    "text": "⚡ Intlawulo ithunyelwe! Ilinde ukuqinisekiswa…"
+  },
+  "redeem.lnaddr.emptyError": {
+    "text": "Nceda ufake idilesi ye-Lightning okanye ikhowudi ye-LNURL."
+  },
+  "redeem.lnaddr.genericError": {
+    "text": "Kukho into engahambanga kakuhle. Nceda uzame kwakhona."
+  },
+  "redeem.lnaddr.promptCopy": {
+    "text": "Khuphela le LNURL:"
+  },
+  "redeem.wallet.recommended": {
+    "text": "Inconyiwe"
+  },
+  "redeem.wallet.which": {
+    "text": "Iyiphi i-wallet oyisebenzisayo?"
+  },
+  "redeem.wallet.cancel": {
+    "text": "Rhoxisa"
+  },
+  "redeem.wallet.openIn": {
+    "text": "Vula kwi-{name}"
+  },
+  "redeem.wallet.openInWallet": {
+    "text": "Vula kwi-wallet"
+  },
+  "redeem.wallet.change": {
+    "text": "tshintsha i-wallet"
+  },
+  "redeem.info.title": {
+    "text": "Funda ngakumbi"
+  },
+  "redeem.info.gettingStarted": {
+    "text": "🟠 Ukuqala"
+  },
+  "redeem.faq.blink.summary": {
+    "html": "Khuphela \"Blink (Bitcoin Wallet)\" <span style=\"background:var(--orange);color:#000;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.3px;\">Inconyiwe</span>"
+  },
+  "redeem.faq.blink.answer": {
+    "html": "<p style=\"font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;\">✅ Kulungile kwabaqalayo. Ukuseta kuphantsi, ukuqala ngokukhawuleza. Inombolo yakho yefowuni sisecwangi sakho.</p>\n            <p class=\"section-label\">Iinyathelo zokuqala</p>\n            <ol class=\"steps-list\">\n              <li>\n                <strong>Khuphela <a class=\"wallet-link\" href=\"https://blink.sv\" target=\"_blank\" rel=\"noopener\">blink.sv</a></strong>\n                Kwisi-Play Store, i-GitHub, okanye i-App Store.\n                <div class=\"wallet-card-links\" style=\"margin-bottom:10px;\">\n                  <a class=\"wallet-link\" href=\"https://play.google.com/store/apps/details?id=com.galoyapp\" target=\"_blank\" rel=\"noopener\">Play Store</a>\n                  <a class=\"wallet-link\" href=\"https://github.com/blinkbitcoin/blink-mobile/releases/latest\" target=\"_blank\" rel=\"noopener\">APK</a>\n                  <a class=\"wallet-link\" href=\"https://apps.apple.com/us/app/blink-bitcoin-wallet/id1531383905\" target=\"_blank\" rel=\"noopener\">App Store</a>\n                </div>\n              </li>\n              <li><strong>Vula isicelo</strong> Cofa \"Yenza i-akhawunti entsha\" -&gt; \"Yamkela\"</li>\n              <li><strong>Faka inombolo yakho yefowuni (ngokuzithandela)</strong> \"SMS\" -&gt; \"Sebenzisa i-SMS\" -&gt; Faka inombolo -&gt; Cofa \"Thumela nge-SMS\". Le yisecwangi sakho. Qinisekisa ikhowudi enamadigi ayi-6.</li>\n              <li><strong>Buyela apha</strong> Cofa ikhowudi ye-QR ingasentla. Oku kuya kuvula uBlink aze ukuvumele ukuthatha i-bitcoin ⚡</li>\n            </ol>"
+  },
+  "redeem.faq.advancedTitle": {
+    "text": "Izipaji ezingqongqo"
+  },
+  "redeem.faq.advancedBody": {
+    "html": "<ul class=\"dots-list\">\n              <li>\n                <strong>Misty Breez</strong>\n                <div class=\"wallet-card-links\" style=\"margin-bottom:8px;\">\n                  <a class=\"wallet-link\" href=\"https://breez.technology/misty/\" target=\"_blank\" rel=\"noopener\">breez.technology/misty</a><br>\n                  <a class=\"wallet-link\" href=\"https://play.google.com/store/apps/details?id=com.breez.misty\" target=\"_blank\" rel=\"noopener\">Play Store</a>\n                  <a class=\"wallet-link\" href=\"https://github.com/breez/misty-breez/releases\" target=\"_blank\" rel=\"noopener\">APK</a>\n                  <a class=\"wallet-link\" href=\"https://testflight.apple.com/join/nEegHvBX\" target=\"_blank\" rel=\"noopener\">App Store</a>\n                </div>\n              </li>\n              <li>\n                <strong>Phoenix</strong>\n                <div class=\"wallet-card-links\" style=\"margin-bottom:8px;\">\n                  <a class=\"wallet-link\" href=\"https://phoenix.acinq.co/\" target=\"_blank\" rel=\"noopener\">phoenix.acinq.co</a>\n                  <a class=\"wallet-link\" href=\"https://play.google.com/store/apps/details?id=fr.acinq.phoenix.mainnet\" target=\"_blank\" rel=\"noopener\">Play Store</a>\n                  <a class=\"wallet-link\" href=\"https://github.com/ACINQ/phoenix/releases/latest\" target=\"_blank\" rel=\"noopener\">APK</a>\n                  <a class=\"wallet-link\" href=\"https://apps.apple.com/us/app/phoenix-wallet/id1544097028\" target=\"_blank\" rel=\"noopener\">App Store</a>\n                </div>\n              </li>\n              <li>\n                <strong>Zeus</strong>\n                <div class=\"wallet-card-links\" style=\"margin-bottom:8px;\">\n                  <a class=\"wallet-link\" href=\"https://zeusln.com/\" target=\"_blank\" rel=\"noopener\">zeusln.com</a>\n                  <a class=\"wallet-link\" href=\"https://play.google.com/store/apps/details?id=app.zeusln.zeus\" target=\"_blank\" rel=\"noopener\">Play Store</a>\n                  <a class=\"wallet-link\" href=\"https://github.com/ZeusLN/zeus/releases/latest\" target=\"_blank\" rel=\"noopener\">APK</a>\n                  <a class=\"wallet-link\" href=\"https://apps.apple.com/us/app/zeus-ln/id1456038895\" target=\"_blank\" rel=\"noopener\">App Store</a>\n                </div>\n              </li>\n              <li>\n                <strong>Blitz Wallet</strong>\n                <div class=\"wallet-card-links\" style=\"margin-bottom:8px;\">\n                  <a class=\"wallet-link\" href=\"https://blitz-wallet.com/\" target=\"_blank\" rel=\"noopener\">blitz-wallet.com</a>\n                  <a class=\"wallet-link\" href=\"https://play.google.com/store/apps/details?id=com.blitzwallet\" target=\"_blank\" rel=\"noopener\">Play Store</a>\n                  <a class=\"wallet-link\" href=\"https://apps.apple.com/us/app/blitz-wallet/id6476810582\" target=\"_blank\" rel=\"noopener\">App Store</a>\n                </div>\n              </li>\n            </ul>"
+  },
+  "redeem.info.spending": {
+    "text": "🟠 Ukuchitha i-Bitcoin"
+  },
+  "redeem.faq.spend.title": {
+    "text": "Ndingachitha phi i-Bitcoin eMzantsi Afrika?"
+  },
+  "redeem.faq.spend.lead": {
+    "text": "Sebenzisa i-Bitcoin nakuphi na — kwimarike zelali, ezikhulu izitolo, iikhadi zesipho, nentlawulo yehlabathi ngoko nangoko."
+  },
+  "redeem.faq.spend.circlesTitle": {
+    "text": "Iimonomi ezijikelezayo ze-Bitcoin eMzantsi Afrika"
+  },
+  "redeem.faq.spend.circlesBody": {
+    "html": "Iiluntu eziphela apho unokuphila nge-Bitcoin:\n                  <strong>Witsand</strong>,\n                  <strong>iMossel Bay</strong> (<a href=\"https://bitcoinekasi.com\" target=\"_blank\" rel=\"noopener\">bitcoinekasi.com</a>),\n                  <strong>iPlettenberg Bay</strong> (<a href=\"https://bitcoinplett.cx\" target=\"_blank\" rel=\"noopener\">bitcoinplett.cx</a>),\n                  <strong>De Rust</strong>,\n                  <strong>Sedgefield</strong>,\n                  <strong>iStellenbosch</strong>,\n                  kunye ne-<strong>Knysna</strong>.\n                  <br>Zonke zinomxholo wemihlangano yelali eyenzeka rhoqo."
+  },
+  "redeem.faq.spend.mapTitle": {
+    "text": "Fumanisa amashishini akufutshane"
+  },
+  "redeem.faq.spend.mapBody": {
+    "html": "<a href=\"https://btcmap.org\" target=\"_blank\" rel=\"noopener\">BTCMap.org</a> kunye ne-\n                  <a href=\"https://goo.gl/maps/tKHJVbVzEuBQd7F8A\" target=\"_blank\" rel=\"noopener\">imephu yeMoney Badger</a>\n                  zibonisa amashishini amaninzi awamkela i-Bitcoin kwihlabathi lonke leMzantsi Afrika."
+  },
+  "redeem.faq.spend.zapperTitle": {
+    "text": "Amashishini eZapper neScan to Pay"
+  },
+  "redeem.faq.spend.zapperBody": {
+    "html": "Hlawula kwisitolo esamkela iZapper okanye iScan to Pay — kubandakanywa\n                  i-Pick &amp; Pay, iDischem, iClicks, iEngen, iShell, iTotal, iWimpy kunye namaninzi."
+  },
+  "redeem.faq.spend.giftTitle": {
+    "text": "Iikhadi zesipho kunye nezinye iitopu"
+  },
+  "redeem.faq.spend.giftBody": {
+    "html": "Thenga iikhadi zesipho zeemeko ezihlabathi kwi-\n                  <a href=\"https://bitrefill.com\" target=\"_blank\" rel=\"noopener\">Bitrefill.com</a> —\n                  i-Netflix, i-Amazon, i-Uber, iitopu zelixa lomnxeba kunye nezinye."
+  },
+  "redeem.faq.spend.meetupsTitle": {
+    "text": "Iindibaniselwano ze-Bitcoin"
+  },
+  "redeem.faq.spend.meetupsBody": {
+    "html": "Iiluntu eziphilileyo eKapa, ePretoria, naseRhawutini.\n                  Fumanisa iziganeko kunye nemihla kwi-Twitter/X — khangela amaqela e-Bitcoin elalini yakho."
+  },
+  "redeem.faq.spend.instantTitle": {
+    "text": "Thumela kumntu wonke, ngoko nangoko"
+  },
+  "redeem.faq.spend.instantBody": {
+    "text": "Iintlawulo ze-Lightning ziyagqiba ngaphantsi kwesekendi, kwihlabathi liphela, ngeemali eziphantsi kakhulu."
+  },
+  "redeem.info.buying": {
+    "text": "🟠 Ukuthenga nokuthengisa iirandi nge-Bitcoin"
+  },
+  "redeem.faq.buyZa.q": {
+    "text": "Ndingathenga phi i-Bitcoin eMzantsi Afrika?"
+  },
+  "redeem.faq.buyZa.a": {
+    "html": "Unokuthenga i-Bitcoin usebenzisa iinkonzo ezifana ne-<strong>54052.co.za</strong>, ezikuvumela ukuhlawula nge-EFT uze ufumane i-Bitcoin ngokuthe ngqo esipajini sakho.\n            Khetha inkonzo elula, ethembekileyo, ekuvumela ukurhoxa esipajini sakho."
+  },
+  "redeem.faq.bankZa.q": {
+    "text": "Ndingathumela njani i-Bitcoin kwi-akhawunti yasebhange eMzantsi Afrika?"
+  },
+  "redeem.faq.bankZa.a": {
+    "html": "Unokusebenzisa i-<strong>54052.co.za</strong> ukuze utshintshe i-Bitcoin zibe iirandi uzithumele ngokuthe ngqo kwi-akhawunti yasebhange eMzantsi Afrika.\n            Kulula ukuyisebenzisa, kugxininisa kwi-Bitcoin, kwaye kukhonjiswe ukuhlawula ngokukhawuleza ngeemali eziphantsi."
+  },
+  "redeem.info.selfCustody": {
+    "text": "🟠 Ukuzigcina okwakho kunye nemfihlo"
+  },
+  "redeem.faq.privacy.q": {
+    "text": "Kutheni ndisebenzise isipaji sam kunye nokukhathalela ubuqu obubodwa?"
+  },
+  "redeem.faq.privacy.a": {
+    "html": "Xa i-Bitcoin yakho ikwitshange, awuyilawuli wena — litshange elilawula. Ii-akhawunti zinokubandakanywa, zilinganiselwa, okanye zilahleke ngenxa ye-hacks okanye ezinye iingxaki.<br><br>\n\n            Iitshange ezininzi zifuna i-KYC (ukuqinisekisa ubume), eyinxibelelanisa isazisi sakho sangempela nomsebenzi wakho we-Bitcoin. Oku yakha irekhodi esisigxina seentlawulo zakho kwaye inciphisa ubuqu obubodwa bakho bezemali.<br><br>\n\n            <strong>\"Akuzizo iqhakuva zakho, akuzizo iintengo zakho.\"</strong> Ukusebenzisa isipaji sakho sikunika ulawulo olupheleleyo kwemali yakho kwaye kunceda ukukhusela ubuqu obubodwa. Phatha njengemali esandleni — wakuba nayo, igcine nawe."
+  },
+  "redeem.info.whyBitcoin": {
+    "text": "🟠 Kutheni i-Bitcoin — hayi i-crypto"
+  },
+  "redeem.faq.crypto.q": {
+    "text": "Yintsoni elahlukileyo phakathi kwe-Bitcoin ne-crypto?"
+  },
+  "redeem.faq.crypto.a": {
+    "html": "<strong>I-Bitcoin</strong> yimali engahlukahlukenanga — akukho basunguli, inkampani, okanye ulawulo oluphakathi. Imimiselo imisiwe kwaye iyaphosiswa sisixeko sehlabathi liphela. Yayenzelwe ukususa ukuthembela kunye nokunika abantu ulawulo olupheleleyo kwemali yabo.<br><br>\n\n            <strong>\"I-crypto\"</strong> yinto yonke enye — iiprojekthi ezinebasunguli, amaqela, kunye nabantu abangaphakathi abanokutshintsha imimiselo, bathinte umsinga, baze benze inzuzo ngokukhawuleza. Oku yenza zibe lula ukuzikhandla kwaye azifanele njengemali.<br><br>\n\n            Iiprojekthi ze-crypto ezininzi azisoluli ingxaki eyintloko ye-fiat — <strong>ulawulo</strong>. Zishenxisa nje elo lawulo lusuka kurhulumente luye kwiinkampani okanye amaqela amancinane.<br><br>\n\n            Iinkcubeko zingononopheli, kodwa ziyimvelaphi evulekileyo kwaye zinokwakhiwa kwi-Bitcoin ngaphandle kokufuna iitokeni ezahlukileyo. Iitokeni ngokwazo zivamile ukuba zingafunekiyo kwaye zikhona ukuze zityebise abantu abangaphakathi.<br><br>\n\n            Imali idlalwa sisiphumo senethiwekhi — abantu bahlangana kwisiqwenga esinye. Imbono yethu ilula: <strong>I-Bitcoin yimali. I-crypto hayi.</strong> Ukuze sigcine uluntu lwethu luze kuphephile, sijonge kuphela kwi-Bitcoin kwaye siyigwema ngokupheleleyo i-crypto."
+  },
+  "redeem.faq.lightning.q": {
+    "text": "Kutheni esi sixeko sisekela kuphela i-Lightning?"
+  },
+  "redeem.faq.lightning.a": {
+    "html": "I-Lightning yingqungquthela yentlawulo ye-Bitcoin. Ivumela iintlawulo ngoko nangoko, iimali eziphantsi kakhulu, kwaye isebenza kwihlabathi liphela kwimizuzwana embalwa.<br><br>\n\n            I-Bitcoin esesitsheni ilula kwaye ibiza kakhulu — ilunge kakhulu ukugcina. I-Lightning yenza i-Bitcoin ibe yinto esebenziseka yemihla ngemihla njengokuthumela imali encinane okanye ukuhlawula ezitolo.<br><br>\n\n            Le platform isebenzisa i-Lightning ukwenza ukuthumela kwe-Bitcoin kube lula, ngokukhawuleza, kwaye kufumaneka kumntu wonke."
+  },
+  "redeem.sticker.voucher": {
+    "text": "IVAWUSHA"
+  },
+  "redeem.funded.satsSuffix": {
+    "text": " iisathi"
+  },
+  "redeem.btn.satsInfoAria": {
+    "aria-label": "Indlela yokuthatha"
+  },
+  "redeem.btn.showVoucher": {
+    "text": "BONISA IVAWUSHA"
+  },
+  "redeem.btn.flipBackTitle": {
+    "title": "Buyela kwivawusha"
+  },
+  "redeem.btn.lnaddrTitle": {
+    "title": "Thumela kwidilesi ye-Lightning"
+  },
+  "redeem.back.qrHint": {
+    "text": "Cofa okanye skena ikhowudi ye-QR ukuze uthathe"
+  },
+  "redeem.btn.openWallet": {
+    "text": "Vula kwisipaji"
+  },
+  "redeem.word.or": {
+    "text": "okanye"
+  }
+}
