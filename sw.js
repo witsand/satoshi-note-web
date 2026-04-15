@@ -4,13 +4,16 @@
  * Bump CACHE version when deploying new static asset versions.
  */
 
-const CACHE = 'sn-v26';
+const CACHE = 'sn-v31';
 
 const PRECACHE = [
-  '/css/style.css?v=72',
+  '/css/style.css?v=74',
   '/js/app.js?v=72',
-  '/js/wallet-picker.js?v=72',
-  '/js/lnaddr-redeem.js?v=72',
+  '/js/i18n-runtime.js?v=76',
+  '/js/decode-lnurl.js?v=77',
+  '/js/redeem-main.js?v=77',
+  '/js/wallet-picker.js?v=77',
+  '/js/lnaddr-redeem.js?v=77',
   '/js/qrcode.min.js',
   '/icon-192.png',
   '/icon-512.png',
@@ -38,8 +41,9 @@ self.addEventListener('fetch', e => {
   const url = new URL(e.request.url);
   if (url.origin !== self.location.origin) return;
 
-  // Cache-first for precached static assets
-  if (PRECACHE.includes(url.pathname)) {
+  // Cache-first for precached static assets (path+query must match PRECACHE entries)
+  const pathAndSearch = url.pathname + url.search;
+  if (PRECACHE.includes(pathAndSearch)) {
     e.respondWith(
       caches.match(e.request).then(r => r || fetch(e.request))
     );

@@ -3,16 +3,16 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Claim Your Voucher</title>
-  <meta name="description" content="You've received a Bitcoin Lightning voucher. Claim it instantly with a Lightning wallet.">
+  <title data-i18n="redeem.meta.pageTitle">Claim Your Voucher</title>
+  <meta name="description" content="You've received a Bitcoin Lightning voucher. Claim it instantly with a Lightning wallet." data-i18n="redeem.meta.description" data-i18n-attrs="content">
   <meta property="og:type" content="website">
-  <meta property="og:title" content="You've received Bitcoin! ⚡">
-  <meta property="og:description" content="Someone sent you a Lightning voucher. Claim it instantly with a Bitcoin wallet — no account needed.">
+  <meta property="og:title" content="You've received Bitcoin! ⚡" data-i18n="redeem.meta.ogTitle" data-i18n-attrs="content">
+  <meta property="og:description" content="Someone sent you a Lightning voucher. Claim it instantly with a Bitcoin wallet — no account needed." data-i18n="redeem.meta.ogDescription" data-i18n-attrs="content">
   <meta property="og:image" content="https://sendsats.co.za/icon-512.png">
   <meta property="og:image:width" content="512">
   <meta property="og:image:height" content="512">
   <meta name="twitter:card" content="summary">
-  <link rel="stylesheet" href="/css/style.css?v=72">
+  <link rel="stylesheet" href="/css/style.css?v=74">
   <style>
     .section-label {
       font-size: 0.7rem;
@@ -50,41 +50,36 @@
 <!-- ── Lightning Address / LNURL Pay modal ──────────────────────────────────── -->
 <div id="lnaddr-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
   <div class="modal-box" style="text-align:left;">
-    <div class="modal-title">Send to Lightning Address</div>
-    <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:14px;">
-      Enter a Lightning address or LNURL pay code to receive the sats directly to your wallet.
-    </p>
+    <div class="modal-title" data-i18n="redeem.modal.lnaddr.title">Send to Lightning Address</div>
+    <p data-i18n="redeem.modal.lnaddr.body" style="font-size:0.82rem;color:var(--text-muted);line-height:1.5;margin-bottom:14px;">Enter a Lightning address or LNURL pay code to receive the sats directly to your wallet.</p>
     <input id="lnaddr-input" type="text" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"
       placeholder="user@domain.com  or  LNURL1…"
+      data-i18n="redeem.modal.lnaddr.input" data-i18n-attrs="placeholder"
       style="width:100%;box-sizing:border-box;padding:10px 12px;border-radius:8px;border:1px solid var(--border);background:var(--card-bg);color:var(--text);font-size:0.9rem;margin-bottom:10px;outline:none;">
     <div id="lnaddr-status" style="font-size:0.8rem;min-height:1.2em;margin-bottom:10px;"></div>
-    <button id="lnaddr-submit" class="btn btn-primary" style="width:100%;margin-bottom:8px;">Send Sats</button>
-    <button id="lnaddr-close" class="modal-close">Cancel</button>
+    <button id="lnaddr-submit" type="button" class="btn btn-primary" style="width:100%;margin-bottom:8px;" data-i18n="redeem.modal.lnaddr.send">Send Sats</button>
+    <button id="lnaddr-close" type="button" class="modal-close" data-i18n="redeem.modal.lnaddr.cancel">Cancel</button>
   </div>
 </div>
 
 <!-- ── Sats info modal ──────────────────────────────────────────────────────── -->
 <div id="sats-info-modal" class="modal-overlay hidden" role="dialog" aria-modal="true">
   <div class="modal-box" style="text-align:left;">
-    <div class="modal-title">How to claim your sats</div>
-    <p style="font-size:0.82rem;color:var(--orange);font-weight:700;margin-bottom:4px;">What are sats?</p>
-    <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:14px;">
-      Satoshis ("sats") are the smallest unit of Bitcoin — like cents to a rand.
-      There are 100 million sats in one Bitcoin.
-      You can save them, spend them, or send them to anyone in the world instantly.
-    </p>
-    <p style="font-size:0.82rem;color:var(--orange);font-weight:700;margin-bottom:4px;">How do I claim them?</p>
+    <div class="modal-title" data-i18n="redeem.modal.sats.title">How to claim your sats</div>
+    <p data-i18n="redeem.modal.sats.whatTitle" style="font-size:0.82rem;color:var(--orange);font-weight:700;margin-bottom:4px;">What are sats?</p>
+    <p data-i18n="redeem.modal.sats.whatBody" style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:14px;white-space:pre-line;">Satoshis ("sats") are the smallest unit of Bitcoin — like cents to a rand.
+There are 100 million sats in one Bitcoin.
+You can save them, spend them, or send them to anyone in the world instantly.</p>
+    <p data-i18n="redeem.modal.sats.howTitle" style="font-size:0.82rem;color:var(--orange);font-weight:700;margin-bottom:4px;">How do I claim them?</p>
     <ol style="font-size:0.82rem;color:var(--text-muted);line-height:1.8;margin:0 0 14px 16px;padding:0;">
-      <li><strong style="color:var(--text);">Get a Bitcoin wallet</strong> — download Blink (recommended for beginners) from the App Store or Play Store.</li>
-      <li><strong style="color:var(--text);">Tap "Show Voucher"</strong> on this page to show the QR code.</li>
-      <li><strong style="color:var(--text);">Scan or tap the QR code</strong> in your wallet app to receive the sats.</li>
+      <li data-i18n="redeem.modal.sats.li1" data-i18n-html><strong style="color:var(--text);">Get a Bitcoin wallet</strong> — download Blink (recommended for beginners) from the App Store or Play Store.</li>
+      <li data-i18n="redeem.modal.sats.li2" data-i18n-html><strong style="color:var(--text);">Tap "Show Voucher"</strong> on this page to show the QR code.</li>
+      <li data-i18n="redeem.modal.sats.li3" data-i18n-html><strong style="color:var(--text);">Scan or tap the QR code</strong> in your wallet app to receive the sats.</li>
     </ol>
-    <p style="font-size:0.82rem;color:var(--orange);font-weight:700;margin-bottom:4px;">What can I do with them?</p>
-    <p style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:16px;">
-      Spend at thousands of merchants, pay bills, send to friends, or hold as savings.
-      See the wallet guide below for more details.
-    </p>
-    <button class="modal-close" id="sats-info-close">Got it</button>
+    <p data-i18n="redeem.modal.sats.doTitle" style="font-size:0.82rem;color:var(--orange);font-weight:700;margin-bottom:4px;">What can I do with them?</p>
+    <p data-i18n="redeem.modal.sats.doBody" style="font-size:0.82rem;color:var(--text-muted);line-height:1.6;margin-bottom:16px;white-space:pre-line;">Spend at thousands of merchants, pay bills, send to friends, or hold as savings.
+See the wallet guide below for more details.</p>
+    <button type="button" class="modal-close" id="sats-info-close" data-i18n="redeem.modal.sats.gotIt">Got it</button>
   </div>
 </div>
 
@@ -92,11 +87,11 @@
 
   <header class="app-header">
     <a href="/" style="text-decoration:none;"><div class="app-logo" id="app-logo"><span></span></div></a>
-    <a href="/" style="font-size:0.75rem;color:var(--text-muted);text-decoration:none;white-space:nowrap;">Gift Bitcoin →</a>
+    <a href="/" id="redeem-header-gift" data-i18n="redeem.header.giftLink" style="font-size:0.75rem;color:var(--text-muted);text-decoration:none;white-space:nowrap;">Gift Bitcoin →</a>
   </header>
 
   <div id="server-notice" class="hidden" style="margin:12px 16px 0;background:var(--card-bg);border:1px solid var(--border);border-radius:8px;padding:10px 14px;font-size:0.8rem;color:var(--text-muted);display:flex;justify-content:space-between;align-items:flex-start;gap:8px;">
-    <span>⚡ Voucher from <strong id="server-notice-host"></strong> added to your server list in Settings.</span>
+    <span><span id="redeem-server-prefix" data-i18n="redeem.serverNotice.prefix">⚡ Voucher from </span><strong id="server-notice-host"></strong><span id="redeem-server-suffix" data-i18n="redeem.serverNotice.suffix"> added to your server list in Settings.</span></span>
     <button id="server-notice-close" style="background:none;border:none;cursor:pointer;color:var(--text-muted);font-size:1.1rem;padding:0;line-height:1;flex-shrink:0;">×</button>
   </div>
 
@@ -107,47 +102,48 @@
 
 </div>
 
-<script src="/js/config.js"></script>
-<script src="/js/qrcode.min.js"></script>
-<script src="/js/wallet-picker.js?v=72"></script>
-<script src="/js/lnaddr-redeem.js?v=72"></script>
-<script>
-(function () {
-  'use strict';
+<div id="sn-l10n-refs" hidden aria-hidden="true">
+  <span data-l10n-ref="metaTitleWithApp" data-i18n="redeem.meta.titleWithApp">Claim Your Voucher — </span>
+  <span data-l10n-ref="stickerInvalid" data-i18n="redeem.sticker.invalid">INVALID</span>
+  <span data-l10n-ref="stickerExpired" data-i18n="redeem.sticker.expired">EXPIRED</span>
+  <span data-l10n-ref="stickerRedeemed" data-i18n="redeem.sticker.redeemed">REDEEMED</span>
+  <span data-l10n-ref="stickerNotFunded" data-i18n="redeem.sticker.notFunded">NOT FUNDED</span>
+  <span data-l10n-ref="stateInvalidTitle" data-i18n="redeem.state.invalidTitle">This link isn't valid</span>
+  <span data-l10n-ref="stateInvalidDesc" data-i18n="redeem.state.invalidDesc">Check the link or contact the sender.</span>
+  <span data-l10n-ref="stateExpiredTitle" data-i18n="redeem.state.expiredTitle">Voucher expired</span>
+  <span data-l10n-ref="stateExpiredDesc" data-i18n="redeem.state.expiredDesc">This voucher expired before it was redeemed. Ask the sender for a new one.</span>
+  <span data-l10n-ref="stateRedeemedTitle" data-i18n="redeem.state.redeemedTitle">Already claimed</span>
+  <span data-l10n-ref="stateRedeemedDesc" data-i18n="redeem.state.redeemedDesc">This voucher has already been redeemed.</span>
+  <span data-l10n-ref="stateUnfundedTitle" data-i18n="redeem.state.unfundedTitle">Not funded yet</span>
+  <span data-l10n-ref="stateUnfundedDesc" data-i18n="redeem.state.unfundedDesc">This voucher hasn't been loaded with Bitcoin yet. Come back once the sender has loaded it.</span>
+  <span data-l10n-ref="stateCheckAgain" data-i18n="redeem.state.checkAgain">Check again</span>
+  <span data-l10n-ref="celebration0" data-i18n="redeem.celebration.0">Someone sent you Bitcoin!</span>
+  <span data-l10n-ref="celebration1" data-i18n="redeem.celebration.1">A gift from a friend!</span>
+  <span data-l10n-ref="celebration2" data-i18n="redeem.celebration.2">Lightning delivery!</span>
+  <span data-l10n-ref="celebration3" data-i18n="redeem.celebration.3">Sats incoming!</span>
+  <span data-l10n-ref="celebration4" data-i18n="redeem.celebration.4">Bitcoin gifted!</span>
+  <span data-l10n-ref="celebration5" data-i18n="redeem.celebration.5">Your voucher awaits!</span>
+  <span data-l10n-ref="btnCopyClaim" data-i18n="redeem.btn.copyClaim">Copy Claim Code</span>
+  <span data-l10n-ref="btnCopied" data-i18n="redeem.btn.copied">Copied!</span>
+  <span data-l10n-ref="qrTapTitle" data-i18n="redeem.qr.tapTitle">Tap to open in wallet</span>
+  <span data-l10n-ref="countdownPrefix" data-i18n="redeem.countdown.prefix">⏳ Expires in </span>
+  <span data-l10n-ref="countdownExpiredMessage" data-i18n="redeem.countdown.expiredMessage">This voucher has expired.</span>
+  <span data-l10n-ref="claimedSuccessLine" data-i18n="redeem.claimed.successLine">✓ Claimed successfully!</span>
+  <span data-l10n-ref="paymentPendingLine" data-i18n="redeem.payment.pendingLine">⚡ Payment sent! Waiting for confirmation…</span>
+  <span data-l10n-ref="lnaddrEmptyError" data-i18n="redeem.lnaddr.emptyError">Please enter a Lightning address or LNURL pay code.</span>
+  <span data-l10n-ref="lnaddrGenericError" data-i18n="redeem.lnaddr.genericError">Something went wrong. Please try again.</span>
+  <span data-l10n-ref="promptCopyLnurl" data-i18n="redeem.lnaddr.promptCopy">Copy this LNURL:</span>
+  <span data-l10n-ref="redeem.wallet.recommended" data-i18n="redeem.wallet.recommended">Recommended</span>
+</div>
 
-  const hashParams  = new URLSearchParams(location.hash.replace(/^#/, ''));
-  const queryParams = new URLSearchParams(location.search);
-  const rawLnurl    = hashParams.get('lightning') || queryParams.get('lightning') || '';
-  const lnurl = rawLnurl.match(/LNURL1[A-Z02-9]+/i)?.[0]?.toUpperCase() || rawLnurl;
-  const main = document.getElementById('redeem-main');
-
-  // ── Apply site name from manifest.json ──────────────────────────────────
-  fetch('/manifest.json').then(r => r.ok ? r.json() : null).then(m => {
-    if (!m || !m.name) return;
-    const words = m.name.split(' ').filter(w => w.length > 0);
-    const logoInner = words.map((w, i) => i % 2 === 0 ? w : '<span>' + w + '</span>').join('');
-    document.title = 'Claim Your Voucher \u2014 ' + m.name;
-    const logoEl = document.getElementById('app-logo');
-    if (logoEl) logoEl.innerHTML = '\u26A1 ' + logoInner;
-  }).catch(() => {});
-
-  // ── Unified "Learn More" info card (accordion) ───────────────────────────
-  function buildInfoCard(openDefault) {
-    const blinkOpen  = openDefault === 'wallet' ? ' open' : '';
-    const spendOpen  = openDefault === 'spend'  ? ' open' : '';
-    return `
-      <div class="card" style="margin-bottom:20px;text-align:left;">
-        <p class="card-title">Learn More</p>
-
-        <p class="faq-section-label">🟠 Getting Started</p>
-
-        <details id="details-blink" class="faq-item"${blinkOpen}>
-          <summary class="faq-question">Download "Blink (Bitcoin Wallet)"
-            <span style="background:var(--orange);color:#000;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.3px;">Recommended</span>
-            <span style="color:var(--text-muted);">＋</span>
-          </summary>
-          <div class="faq-answer" style="padding-top:8px;">
-            <p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;">✅ Great for beginners. Low setup, fast to start. Your phone number is your backup.</p>
+<template id="tpl-redeem-info">
+  <div class="card" style="margin-bottom:20px;text-align:left;">
+    <p class="card-title" data-i18n="redeem.info.title">Learn More</p>
+    <p class="faq-section-label" data-i18n="redeem.info.gettingStarted">🟠 Getting Started</p>
+    <details id="details-blink" class="faq-item">
+      <summary class="faq-question"><span data-i18n="redeem.faq.blink.summary" data-i18n-html>Download "Blink (Bitcoin Wallet)" <span style="background:var(--orange);color:#000;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.3px;">Recommended</span></span><span style="color:var(--text-muted);">＋</span></summary>
+      <div class="faq-answer" style="padding-top:8px;">
+        <div data-i18n="redeem.faq.blink.answer" data-i18n-html><p style="font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;">✅ Great for beginners. Low setup, fast to start. Your phone number is your backup.</p>
             <p class="section-label">Steps to get started</p>
             <ol class="steps-list">
               <li>
@@ -160,19 +156,16 @@
                   <a class="wallet-link" href="https://apps.apple.com/us/app/blink-bitcoin-wallet/id1531383905" target="_blank" rel="noopener">App Store</a>
                 </div>
               </li>
-              <li><strong>Open the app</strong>Tap "Create new account" -> "Accept"</li>
-              <li><strong>Enter your phone number (optional)</strong>"SMS" -> "Use SMS" -> Enter number -> Tap "Send via SMS". This is your backup. Confirm the 6 digit code.</li>
-              <li><strong>Come back here</strong>Tap the QR code above. This will open Blink and allow you to redeem the bitcoin ⚡</li>
-            </ol>
-          </div>
-        </details>
-
-        <!-- Other wallets: collapsed by default -->
-        <details class="faq-item">
-          <summary class="faq-question">Advanced Wallets<span style="color:var(--text-muted);">＋</span></summary>
-          <div class="faq-answer">
-            <ul class="dots-list">
-
+              <li><strong>Open the app</strong> Tap "Create new account" -&gt; "Accept"</li>
+              <li><strong>Enter your phone number (optional)</strong> "SMS" -&gt; "Use SMS" -&gt; Enter number -&gt; Tap "Send via SMS". This is your backup. Confirm the 6 digit code.</li>
+              <li><strong>Come back here</strong> Tap the QR code above. This will open Blink and allow you to redeem the bitcoin ⚡</li>
+            </ol></div>
+      </div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-question"><span data-i18n="redeem.faq.advancedTitle">Advanced Wallets</span><span style="color:var(--text-muted);">＋</span></summary>
+      <div class="faq-answer">
+        <div data-i18n="redeem.faq.advancedBody" data-i18n-html><ul class="dots-list">
               <li>
                 <strong>Misty Breez</strong>
                 <div class="wallet-card-links" style="margin-bottom:8px;">
@@ -182,7 +175,6 @@
                   <a class="wallet-link" href="https://testflight.apple.com/join/nEegHvBX" target="_blank" rel="noopener">App Store</a>
                 </div>
               </li>
-
               <li>
                 <strong>Phoenix</strong>
                 <div class="wallet-card-links" style="margin-bottom:8px;">
@@ -192,7 +184,6 @@
                   <a class="wallet-link" href="https://apps.apple.com/us/app/phoenix-wallet/id1544097028" target="_blank" rel="noopener">App Store</a>
                 </div>
               </li>
-
               <li>
                 <strong>Zeus</strong>
                 <div class="wallet-card-links" style="margin-bottom:8px;">
@@ -202,7 +193,6 @@
                   <a class="wallet-link" href="https://apps.apple.com/us/app/zeus-ln/id1456038895" target="_blank" rel="noopener">App Store</a>
                 </div>
               </li>
-
               <li>
                 <strong>Blitz Wallet</strong>
                 <div class="wallet-card-links" style="margin-bottom:8px;">
@@ -211,25 +201,22 @@
                   <a class="wallet-link" href="https://apps.apple.com/us/app/blitz-wallet/id6476810582" target="_blank" rel="noopener">App Store</a>
                 </div>
               </li>
+            </ul></div>
+      </div>
+    </details>
+    <p class="faq-section-label" data-i18n="redeem.info.spending">🟠 Spending Bitcoin</p>
+    <details id="details-spend" class="faq-item">
+      <summary class="faq-question"><span data-i18n="redeem.faq.spend.title">Where can I spend Bitcoin in South Africa?</span><span style="color:var(--text-muted);">＋</span></summary>
+      <div class="faq-answer">
 
-            </ul>
-          </div>
-        </details>
-
-        <p class="faq-section-label">🟠 Spending Bitcoin</p>
-
-        <details id="details-spend" class="faq-item"${spendOpen}>
-          <summary class="faq-question">Where can I spend Bitcoin in South Africa?<span style="color:var(--text-muted);">＋</span></summary>
-          <div class="faq-answer">
             <div class="spend-item">
-              <div class="spend-title">Use Bitcoin everywhere — local markets, big stores, gift cards, and instant global payments.</div>
+              <div class="spend-title" data-i18n="redeem.faq.spend.lead">Use Bitcoin everywhere — local markets, big stores, gift cards, and instant global payments.</div>
             </div>
             <div class="spend-item">
               <span class="spend-icon">🌀</span>
               <div>
-                <div class="spend-title">Bitcoin circular economies in SA</div>
-                <div class="spend-desc">
-                  Entire communities where you can live on Bitcoin:
+                <div class="spend-title" data-i18n="redeem.faq.spend.circlesTitle">Bitcoin circular economies in SA</div>
+                <div class="spend-desc" data-i18n="redeem.faq.spend.circlesBody" data-i18n-html>Entire communities where you can live on Bitcoin:
                   <strong>Witsand</strong>,
                   <strong>Mossel Bay</strong> (<a href="https://bitcoinekasi.com" target="_blank" rel="noopener">bitcoinekasi.com</a>),
                   <strong>Plettenberg Bay</strong> (<a href="https://bitcoinplett.cx" target="_blank" rel="noopener">bitcoinplett.cx</a>),
@@ -237,99 +224,76 @@
                   <strong>Sedgefield</strong>,
                   <strong>Stellenbosch</strong>,
                   and <strong>Knysna</strong>.
-                  <br>All have regular local meetups.
-                </div>
+                  <br>All have regular local meetups.</div>
               </div>
             </div>
             <div class="spend-item">
               <span class="spend-icon">🗺️</span>
               <div>
-                <div class="spend-title">Find nearby merchants</div>
-                <div class="spend-desc">
-                  <a href="https://btcmap.org" target="_blank" rel="noopener">BTCMap.org</a> and the
+                <div class="spend-title" data-i18n="redeem.faq.spend.mapTitle">Find nearby merchants</div>
+                <div class="spend-desc" data-i18n="redeem.faq.spend.mapBody" data-i18n-html><a href="https://btcmap.org" target="_blank" rel="noopener">BTCMap.org</a> and the
                   <a href="https://goo.gl/maps/tKHJVbVzEuBQd7F8A" target="_blank" rel="noopener">Money Badger map</a>
-                  show thousands of Bitcoin-accepting businesses across South Africa.
-                </div>
+                  show thousands of Bitcoin-accepting businesses across South Africa.</div>
               </div>
             </div>
             <div class="spend-item">
               <span class="spend-icon">🏪</span>
               <div>
-                <div class="spend-title">Zapper &amp; Scan to Pay merchants</div>
-                <div class="spend-desc">
-                  Pay at any store that accepts Zapper or Scan to Pay — including
-                  Pick &amp; Pay, Dischem, Clicks, Engen, Shell, Total, Wimpy and many more.
-                </div>
+                <div class="spend-title" data-i18n="redeem.faq.spend.zapperTitle">Zapper &amp; Scan to Pay merchants</div>
+                <div class="spend-desc" data-i18n="redeem.faq.spend.zapperBody" data-i18n-html>Pay at any store that accepts Zapper or Scan to Pay — including
+                  Pick &amp; Pay, Dischem, Clicks, Engen, Shell, Total, Wimpy and many more.</div>
               </div>
             </div>
             <div class="spend-item">
               <span class="spend-icon">🎁</span>
               <div>
-                <div class="spend-title">Gift cards &amp; top-ups</div>
-                <div class="spend-desc">
-                  Buy gift cards for hundreds of global brands at
+                <div class="spend-title" data-i18n="redeem.faq.spend.giftTitle">Gift cards &amp; top-ups</div>
+                <div class="spend-desc" data-i18n="redeem.faq.spend.giftBody" data-i18n-html>Buy gift cards for hundreds of global brands at
                   <a href="https://bitrefill.com" target="_blank" rel="noopener">Bitrefill.com</a> —
-                  Netflix, Amazon, Uber, Airtime top-ups and more.
-                </div>
+                  Netflix, Amazon, Uber, Airtime top-ups and more.</div>
               </div>
             </div>
             <div class="spend-item">
               <span class="spend-icon">🤝</span>
               <div>
-                <div class="spend-title">Bitcoin meetups</div>
-                <div class="spend-desc">
-                  Active communities in Cape Town, Pretoria, and Johannesburg.
-                  Find events and dates on Twitter/X — search for local Bitcoin groups in your city.
-                </div>
+                <div class="spend-title" data-i18n="redeem.faq.spend.meetupsTitle">Bitcoin meetups</div>
+                <div class="spend-desc" data-i18n="redeem.faq.spend.meetupsBody" data-i18n-html>Active communities in Cape Town, Pretoria, and Johannesburg.
+                  Find events and dates on Twitter/X — search for local Bitcoin groups in your city.</div>
               </div>
             </div>
             <div class="spend-item">
               <span class="spend-icon">💸</span>
               <div>
-                <div class="spend-title">Send to anyone, instantly</div>
-                <div class="spend-desc">Lightning payments settle in under a second, worldwide, for near-zero fees.</div>
+                <div class="spend-title" data-i18n="redeem.faq.spend.instantTitle">Send to anyone, instantly</div>
+                <div class="spend-desc" data-i18n="redeem.faq.spend.instantBody">Lightning payments settle in under a second, worldwide, for near-zero fees.</div>
               </div>
             </div>
-          </div>
-        </details>
-        
-        <p class="faq-section-label">🟠 Buying and Selling Rands for Bitcoin</p>
-
-        <details class="faq-item">
-          <summary class="faq-question">Where can I buy Bitcoin in South Africa?<span style="color:var(--text-muted);">＋</span></summary>
-          <div class="faq-answer">
-            You can buy Bitcoin using services like <strong>54052.co.za</strong>, which allow you to pay via EFT and receive Bitcoin directly to your wallet. 
-            Choose a service that is simple, reliable, and lets you withdraw to your own wallet.
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary class="faq-question">How do I send Bitcoin to a South African bank account?<span style="color:var(--text-muted);">＋</span></summary>
-          <div class="faq-answer">
-            You can use <strong>54052.co.za</strong> to convert Bitcoin to rands and send it directly to a South African bank account. 
-            It’s simple to use, Bitcoin-focused, and designed for fast, low-fee payouts.
-          </div>
-        </details>
-
-        <p class="faq-section-label">🟠 Self-custody and Privacy</p>
-
-       <details class="faq-item">
-          <summary class="faq-question">Why should I use my own wallet and care about privacy?<span style="color:var(--text-muted);">＋</span></summary>
-          <div class="faq-answer">
-            When your Bitcoin is on an exchange, you don’t control it — the exchange does. Accounts can be frozen, restricted, or lost due to hacks or other issues.<br><br>
+      </div>
+    </details>
+    <p class="faq-section-label" data-i18n="redeem.info.buying">🟠 Buying and Selling Rands for Bitcoin</p>
+    <details class="faq-item">
+      <summary class="faq-question"><span data-i18n="redeem.faq.buyZa.q">Where can I buy Bitcoin in South Africa?</span><span style="color:var(--text-muted);">＋</span></summary>
+      <div class="faq-answer" data-i18n="redeem.faq.buyZa.a" data-i18n-html>You can buy Bitcoin using services like <strong>54052.co.za</strong>, which allow you to pay via EFT and receive Bitcoin directly to your wallet.
+            Choose a service that is simple, reliable, and lets you withdraw to your own wallet.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-question"><span data-i18n="redeem.faq.bankZa.q">How do I send Bitcoin to a South African bank account?</span><span style="color:var(--text-muted);">＋</span></summary>
+      <div class="faq-answer" data-i18n="redeem.faq.bankZa.a" data-i18n-html>You can use <strong>54052.co.za</strong> to convert Bitcoin to rands and send it directly to a South African bank account.
+            It’s simple to use, Bitcoin-focused, and designed for fast, low-fee payouts.</div>
+    </details>
+    <p class="faq-section-label" data-i18n="redeem.info.selfCustody">🟠 Self-custody and Privacy</p>
+    <details class="faq-item">
+      <summary class="faq-question"><span data-i18n="redeem.faq.privacy.q">Why should I use my own wallet and care about privacy?</span><span style="color:var(--text-muted);">＋</span></summary>
+      <div class="faq-answer" data-i18n="redeem.faq.privacy.a" data-i18n-html>When your Bitcoin is on an exchange, you don’t control it — the exchange does. Accounts can be frozen, restricted, or lost due to hacks or other issues.<br><br>
 
             Most exchanges also require KYC (identity verification), which links your real identity to your Bitcoin activity. This creates a permanent record of your transactions and reduces your financial privacy.<br><br>
 
-            <strong>"Not your keys, not your coins."</strong> Using your own wallet gives you full control over your money and helps protect your privacy. Treat it like cash — once you own it, keep it with you.
-          </div>
-        </details>
-
-        <p class="faq-section-label">🟠 Why Bitcoin — Not Crypto</p>
-
-        <details class="faq-item">
-          <summary class="faq-question">What is the difference between Bitcoin and crypto?<span style="color:var(--text-muted);">＋</span></summary>
-          <div class="faq-answer">
-            <strong>Bitcoin</strong> is decentralized money — no founders, no company, no central control. The rules are fixed and enforced by a global network. It was designed to remove trust and give individuals full control over their money.<br><br>
+            <strong>"Not your keys, not your coins."</strong> Using your own wallet gives you full control over your money and helps protect your privacy. Treat it like cash — once you own it, keep it with you.</div>
+    </details>
+    <p class="faq-section-label" data-i18n="redeem.info.whyBitcoin">🟠 Why Bitcoin — Not Crypto</p>
+    <details class="faq-item">
+      <summary class="faq-question"><span data-i18n="redeem.faq.crypto.q">What is the difference between Bitcoin and crypto?</span><span style="color:var(--text-muted);">＋</span></summary>
+      <div class="faq-answer" data-i18n="redeem.faq.crypto.a" data-i18n-html><strong>Bitcoin</strong> is decentralized money — no founders, no company, no central control. The rules are fixed and enforced by a global network. It was designed to remove trust and give individuals full control over their money.<br><br>
 
             <strong>"Crypto"</strong> is everything else — projects with founders, teams, and insiders who can change the rules, influence supply, and benefit early. This makes them easy to manipulate and unsuitable as money.<br><br>
 
@@ -337,466 +301,74 @@
 
             The technologies may be interesting, but they are open source and can be built on Bitcoin without needing separate tokens. The tokens themselves are usually unnecessary and exist to enrich insiders.<br><br>
 
-            Money is driven by network effects — people converge on one standard. Our view is simple: <strong>Bitcoin is money. Crypto is not.</strong> To keep our community safe, we focus on Bitcoin only and avoid crypto entirely.
-          </div>
-        </details>
-
-        <details class="faq-item">
-          <summary class="faq-question">Why does this platform only support Lightning?<span style="color:var(--text-muted);">＋</span></summary>
-          <div class="faq-answer">
-            Lightning is Bitcoin’s payment layer. It allows instant transactions, near-zero fees, and works globally in seconds.<br><br>
+            Money is driven by network effects — people converge on one standard. Our view is simple: <strong>Bitcoin is money. Crypto is not.</strong> To keep our community safe, we focus on Bitcoin only and avoid crypto entirely.</div>
+    </details>
+    <details class="faq-item">
+      <summary class="faq-question"><span data-i18n="redeem.faq.lightning.q">Why does this platform only support Lightning?</span><span style="color:var(--text-muted);">＋</span></summary>
+      <div class="faq-answer" data-i18n="redeem.faq.lightning.a" data-i18n-html>Lightning is Bitcoin’s payment layer. It allows instant transactions, near-zero fees, and works globally in seconds.<br><br>
 
             On-chain Bitcoin is slower and more expensive — better suited for saving. Lightning makes Bitcoin practical for everyday payments like sending small amounts or paying in shops.<br><br>
 
-            This platform uses Lightning to make sending Bitcoin simple, fast, and accessible to anyone.
+            This platform uses Lightning to make sending Bitcoin simple, fast, and accessible to anyone.</div>
+    </details>
+  </div>
+</template>
+<template id="tpl-redeem-funded">
+  <div class="redeem-flipper">
+    <div class="redeem-card-inner" id="redeem-card-inner">
+      <div class="redeem-card-face redeem-card-front card" style="position:relative;overflow:hidden;text-align:center;background:linear-gradient(160deg,#2a1f0e 0%,#1a1a1a 55%);border:1px solid rgba(247,147,26,0.25);animation:hc-card-glow-orange 4s ease-in-out infinite,hc-card-flip-in 0.45s ease-out both;padding-bottom:20px;">
+        <div class="hc-sticker" id="redeem-sticker" data-i18n="redeem.sticker.voucher">VOUCHER</div>
+        <div id="redeem-confetti-root"></div>
+        <div id="redeem-expiry-row" style="text-align:center;margin-bottom:14px;">
+          <span id="expiry-countdown" style="font-size:0.72rem;color:var(--text-muted);"></span>
+        </div>
+        <div class="hc-redeemed-hero" style="padding-top:0;margin-bottom:4px;">
+          <img src="/apple-touch-icon.png" class="hc-favicon-icon hc-favicon-funded" alt="" loading="eager">
+          <div style="font-size:2rem;font-weight:800;color:var(--text);letter-spacing:-1px;margin-bottom:2px;">
+            ⚡ <span id="redeem-sats-amount"></span><span data-i18n="redeem.funded.satsSuffix"> sats</span>
+            <button type="button" id="btn-sats-info" style="background:none;border:1.5px solid var(--text-muted);border-radius:50%;width:20px;height:20px;font-size:0.72rem;color:var(--text-muted);cursor:pointer;line-height:1;padding:0;vertical-align:middle;margin-left:5px;" data-i18n="redeem.btn.satsInfoAria" data-i18n-attrs="aria-label" aria-label="How to claim">?</button>
           </div>
-        </details>
+          <div id="redeem-fiat-value" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0;"></div>
+        </div>
+        <div id="redeem-celebration" style="font-size:1rem;font-weight:700;color:var(--text);margin:14px 0 20px;"></div>
+        <button type="button" id="btn-reveal-secret" class="btn btn-primary" style="width:100%;font-size:1rem;font-weight:800;padding:14px 0;letter-spacing:1px;" data-i18n="redeem.btn.showVoucher">SHOW VOUCHER</button>
+        <div id="redeem-funded-host" style="text-align:center;margin-top:10px;font-size:0.7rem;color:var(--text-muted);opacity:0.65;"></div>
       </div>
-    `;
-  }
-
-  // ── Styled state card with sticker ──────────────────────────────────────
-  function stateCard(stickerLabel, stickerClass, icon, title, desc, extraHTML, serverHost) {
-    const hostTag = serverHost
-      ? `<div style="text-align:center;margin-top:14px;font-size:0.7rem;color:var(--text-muted);opacity:0.65;">${serverHost}</div>`
-      : '';
-    return `
-      <div class="card" style="position:relative;overflow:hidden;text-align:center;margin-bottom:20px;">
-        <div class="hc-sticker ${stickerClass}">${stickerLabel}</div>
-        <div style="font-size:2rem;margin:20px 0 10px;">${icon}</div>
-        <div style="font-weight:700;margin-bottom:8px;">${title}</div>
-        <div style="font-size:0.85rem;color:var(--text-muted);">${desc}</div>
-        ${extraHTML || ''}
-        ${hostTag}
-      </div>`;
-  }
-
-  // ── State: invalid link ─────────────────────────────────────────────────
-  function showInvalid() {
-    main.innerHTML =
-      stateCard('INVALID', 'hc-sticker-gray', '🔗', "This link isn't valid", 'Check the link or contact the sender.') +
-      buildInfoCard(null);
-  }
-
-  if (!lnurl || !lnurl.toUpperCase().startsWith('LNURL1')) {
-    showInvalid();
-    return;
-  }
-
-  // ── Minimal bech32 LNURL decoder ─────────────────────────────────────────
-  function decodeLNURL(lnurl) {
-    const CHARSET = 'qpzry9x8gf2tvdw0s3jn54khce6mua7l';
-    const str = lnurl.toLowerCase();
-    const sep = str.lastIndexOf('1');
-    const data5 = str.slice(sep + 1, -6).split('').map(c => CHARSET.indexOf(c));
-    let acc = 0, bits = 0;
-    const bytes = [];
-    for (const v of data5) {
-      acc = (acc << 5) | v;
-      bits += 5;
-      while (bits >= 8) { bits -= 8; bytes.push((acc >> bits) & 0xff); }
-    }
-    return new TextDecoder().decode(new Uint8Array(bytes));
-  }
-
-  // ── secretToPubKey — mirrors server-side derivation ──────────────────────
-  async function secretToPubKey(secret) {
-    const bytes = Uint8Array.from(secret.match(/../g).map(h => parseInt(h, 16)));
-    const hash = await crypto.subtle.digest('SHA-256', bytes);
-    return Array.from(new Uint8Array(hash).slice(0, bytes.length))
-      .map(b => b.toString(16).padStart(2, '0')).join('');
-  }
-
-  // ── Server URL resolution ─────────────────────────────────────────────────
-  function resolveRedeemServerURL(decodedLNURL) {
-    try { return new URL(decodedLNURL).origin; } catch (_) {}
-    const stored = localStorage.getItem('sn_server_url');
-    if (stored) return stored.replace(/\/$/, '');
-    if (window.SATOSHI_NOTE_DEFAULT_SERVER) return window.SATOSHI_NOTE_DEFAULT_SERVER;
-    return window.location.origin;
-  }
-
-  // ── Fetch status then branch ──────────────────────────────────────────────
-  async function init() {
-    let secret, serverURL;
-    try {
-      const decoded = decodeLNURL(lnurl);
-      serverURL = resolveRedeemServerURL(decoded);
-      secret = new URL(decoded).pathname.split('/').pop();
-    } catch {
-      showInvalid();
-      return;
-    }
-
-    const pk = await secretToPubKey(secret);
-
-    // Try the LNURL's own server first, then fall back to known servers in case
-    // the link was created before the frontend/backend split and points to a stale origin.
-    const fallbackChain = [
-      serverURL,
-      (localStorage.getItem('sn_server_url') || '').replace(/\/$/, ''),
-      (window.SATOSHI_NOTE_DEFAULT_SERVER || '').replace(/\/$/, ''),
-      window.location.origin,
-    ].filter(Boolean);
-    const uniqueServers = [...new Set(fallbackChain)];
-
-    let status = null;
-    for (const candidate of uniqueServers) {
-      try {
-        const resp = await fetch(candidate + '/status', {
-          method: 'POST', headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ pubkeys: [pk] }),
-        });
-        if (resp.ok) {
-          status = (await resp.json())[pk];
-          serverURL = candidate; // update so polling uses the working server
-          break;
-        }
-      } catch {}
-    }
-    if (!status) { showInvalid(); return; }
-
-    // Register the working server. If it's new to this device, save it and notify.
-    (function registerServer() {
-      const knownKey = 'sn_known_servers';
-      const activeKey = 'sn_server_url';
-      let known = [];
-      try { known = JSON.parse(localStorage.getItem(knownKey)) || []; } catch {}
-      const alreadyKnown = known.includes(serverURL);
-      if (!alreadyKnown) {
-        known.push(serverURL);
-        localStorage.setItem(knownKey, JSON.stringify(known));
-      }
-      const configured = (localStorage.getItem(activeKey) || '').replace(/\/$/, '');
-      if (!configured) {
-        // First visit — set this as the active server silently.
-        localStorage.setItem(activeKey, serverURL);
-      } else if (!alreadyKnown && configured !== serverURL) {
-        // Existing user, new server — show notification.
-        const notice = document.getElementById('server-notice');
-        const hostEl = document.getElementById('server-notice-host');
-        if (notice && hostEl) {
-          try { hostEl.textContent = new URL(serverURL).hostname; } catch { hostEl.textContent = serverURL; }
-          notice.classList.remove('hidden');
-          document.getElementById('server-notice-close').onclick = () => notice.classList.add('hidden');
-        }
-      }
-    })();
-
-    const { active, refunded, balance_msat, expires_at } = status;
-
-    // ── State: inactive + refunded (expired) ────────────────────────────
-    const _serverHost = (() => { try { return new URL(serverURL).hostname; } catch { return serverURL; } })();
-
-    if (!active && refunded) {
-      main.innerHTML =
-        stateCard('EXPIRED', 'hc-sticker-gray', '⏰', 'Voucher expired', 'This voucher expired before it was redeemed. Ask the sender for a new one.', null, _serverHost) +
-        buildInfoCard(null);
-      return;
-    }
-
-    // ── State: inactive + not refunded (already redeemed) ───────────────
-    if (!active && !refunded) {
-      main.innerHTML =
-        stateCard('REDEEMED', 'hc-sticker-green', '✅', 'Already claimed', 'This voucher has already been redeemed.', null, _serverHost) +
-        buildInfoCard('spend');
-      return;
-    }
-
-    // ── State: active + unfunded ─────────────────────────────────────────
-    if (active && balance_msat === 0) {
-      main.innerHTML =
-        stateCard('NOT FUNDED', '', '⏳', 'Not funded yet',
-          "This voucher hasn't been loaded with Bitcoin yet. Come back once the sender has loaded it.",
-          '<button class="btn btn-secondary btn-sm" style="width:auto;margin:12px auto 0;" onclick="location.reload()">Check again</button>',
-          _serverHost) +
-        buildInfoCard(null);
-      return;
-    }
-
-    // ── State: active + funded (happy path) ──────────────────────────────
-    const sats = Math.floor(balance_msat / 1000);
-    const satsFormatted = sats.toLocaleString();
-
-    const hasExpiry = expires_at && expires_at > 0;
-
-    // Confetti — seeded from current second so it varies per visit but is stable on render
-    const confettiSeed = Math.floor(Date.now() / 1000);
-    const CELEBRATIONS = [
-      { msg: 'Someone sent you Bitcoin!', emoji: '🎉' },
-      { msg: 'A gift from a friend!',     emoji: '🌟' },
-      { msg: 'Lightning delivery!',       emoji: '🏆' },
-      { msg: 'Sats incoming!',            emoji: '⚡' },
-      { msg: 'Bitcoin gifted!',           emoji: '🎊' },
-      { msg: 'Your voucher awaits!',      emoji: '✨' },
-    ];
-    const cel = CELEBRATIONS[confettiSeed % CELEBRATIONS.length];
-    const CONFETTI_COLORS = ['#F7931A','#6dba6d','#7eb5f7','#f5a623','#e879a0','#a78bfa'];
-    let confettiHTML = '<div class="hc-confetti" aria-hidden="true">';
-    for (let i = 0; i < 14; i++) {
-      const seed = confettiSeed + i;
-      const left  = ((seed * 37 + i * 97) % 86) + 7;
-      const color = CONFETTI_COLORS[(seed + i) % CONFETTI_COLORS.length];
-      const size  = ((seed + i) % 3) + 3;
-      const delay = ((i * 0.18) % 2.4).toFixed(2);
-      const dur   = (2.2 + ((seed * i) % 14) * 0.1).toFixed(1);
-      const rot   = (seed * i * 13) % 360;
-      confettiHTML += `<span class="hc-confetti-piece" style="left:${left}%;background:${color};width:${size}px;height:${size}px;animation-delay:${delay}s;animation-duration:${dur}s;--rot:${rot}deg;"></span>`;
-    }
-    confettiHTML += '</div>';
-
-    main.innerHTML = `
-      <div class="redeem-flipper">
-        <div class="redeem-card-inner" id="redeem-card-inner">
-
-          <!-- FRONT FACE -->
-          <div class="redeem-card-face redeem-card-front card" style="position:relative;overflow:hidden;text-align:center;background:linear-gradient(160deg,#2a1f0e 0%,#1a1a1a 55%);border:1px solid rgba(247,147,26,0.25);animation:hc-card-glow-orange 4s ease-in-out infinite,hc-card-flip-in 0.45s ease-out both;padding-bottom:20px;">
-            <div class="hc-sticker" id="redeem-sticker">VOUCHER</div>
-            ${confettiHTML}
-
-            <!-- Expiry centered below header -->
-            ${hasExpiry ? '<div style="text-align:center;margin-bottom:14px;"><span id="expiry-countdown" style="font-size:0.72rem;color:var(--text-muted);"></span></div>' : '<div style="margin-bottom:14px;"></div>'}
-
-            <!-- Favicon + amount -->
-            <div class="hc-redeemed-hero" style="padding-top:0;margin-bottom:4px;">
-              <img src="/apple-touch-icon.png" class="hc-favicon-icon hc-favicon-funded" alt="" loading="eager">
-              <div style="font-size:2rem;font-weight:800;color:var(--text);letter-spacing:-1px;margin-bottom:2px;">
-                ⚡ ${satsFormatted} sats
-                <button id="btn-sats-info" style="background:none;border:1.5px solid var(--text-muted);border-radius:50%;width:20px;height:20px;font-size:0.72rem;color:var(--text-muted);cursor:pointer;line-height:1;padding:0;vertical-align:middle;margin-left:5px;" aria-label="How to claim">?</button>
-              </div>
-              <div id="redeem-fiat-value" style="font-size:0.85rem;color:var(--text-muted);margin-bottom:0;"></div>
-            </div>
-
-            <!-- Guidance text -->
-            <div id="redeem-celebration" style="font-size:1rem;font-weight:700;color:var(--text);margin:14px 0 20px;">${cel.emoji} You've received a Bitcoin voucher!</div>
-
-            <!-- Big reveal button -->
-            <button id="btn-reveal-secret" class="btn btn-primary" style="width:100%;font-size:1rem;font-weight:800;padding:14px 0;letter-spacing:1px;">SHOW VOUCHER</button>
-            <div style="text-align:center;margin-top:10px;font-size:0.7rem;color:var(--text-muted);opacity:0.65;">${_serverHost}</div>
+      <div class="redeem-card-face redeem-card-back card" style="position:relative;text-align:center;">
+        <button type="button" id="btn-flip-back" title="Back to voucher" data-i18n="redeem.btn.flipBackTitle" data-i18n-attrs="title" style="position:absolute;top:12px;left:12px;background:rgba(247,147,26,0.1);border:1.5px solid rgba(247,147,26,0.3);border-radius:8px;width:42px;height:42px;font-size:1.25rem;color:var(--orange);cursor:pointer;line-height:1;padding:0;z-index:2;">👁</button>
+        <button type="button" id="btn-lnaddr" title="Send to Lightning address" data-i18n="redeem.btn.lnaddrTitle" data-i18n-attrs="title" style="position:absolute;top:12px;right:12px;background:rgba(247,147,26,0.1);border:1.5px solid rgba(247,147,26,0.3);border-radius:8px;width:42px;height:42px;font-size:1.25rem;font-weight:700;color:var(--orange);cursor:pointer;line-height:1;padding:0;z-index:2;">@</button>
+        <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;" data-i18n="redeem.back.qrHint">Tap or Scan the QR code to claim</p>
+        <div class="qr-wrapper" style="padding:0 0 4px;">
+          <div id="redeem-qr-container" class="qr-container"></div>
+          <div style="display:flex;align-items:center;gap:8px;margin-top:14px;">
+            <button type="button" id="btn-open-wallet" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;" data-i18n="redeem.btn.openWallet">Open in Wallet</button>
+            <span style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;" data-i18n="redeem.word.or">or</span>
+            <button type="button" id="redeem-lnurl-text" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;" data-i18n="redeem.btn.copyClaim">Copy Claim Code</button>
           </div>
-
-          <!-- BACK FACE -->
-          <div class="redeem-card-face redeem-card-back card" style="position:relative;text-align:center;">
-            <button id="btn-flip-back" title="Back to voucher" style="position:absolute;top:12px;left:12px;background:rgba(247,147,26,0.1);border:1.5px solid rgba(247,147,26,0.3);border-radius:8px;width:42px;height:42px;font-size:1.25rem;color:var(--orange);cursor:pointer;line-height:1;padding:0;z-index:2;">👁</button>
-            <button id="btn-lnaddr" title="Send to Lightning address" style="position:absolute;top:12px;right:12px;background:rgba(247,147,26,0.1);border:1.5px solid rgba(247,147,26,0.3);border-radius:8px;width:42px;height:42px;font-size:1.25rem;font-weight:700;color:var(--orange);cursor:pointer;line-height:1;padding:0;z-index:2;">@</button>
-            <p style="font-size:0.85rem;color:var(--text-muted);margin-bottom:16px;">Tap or Scan the QR code to claim</p>
-            <div class="qr-wrapper" style="padding:0 0 4px;">
-              <div id="redeem-qr-container" class="qr-container"></div>
-              <div style="display:flex;align-items:center;gap:8px;margin-top:14px;">
-                <button id="btn-open-wallet" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Open in Wallet</button>
-                <span style="font-size:0.8rem;color:var(--text-muted);white-space:nowrap;">or</span>
-                <button id="redeem-lnurl-text" class="btn btn-primary" style="flex:1;font-size:0.9rem;font-weight:700;white-space:nowrap;">Copy Claim Code</button>
-              </div>
-            </div>
-          </div>
-
         </div>
       </div>
-      ${buildInfoCard('wallet')}
-    `;
+    </div>
+  </div>
+</template>
 
-    // ── QR on back face ──────────────────────────────────────────────────
-    const container = document.getElementById('redeem-qr-container');
-    new QRCode(container, { text: 'lightning:' + lnurl, width: 180, height: 180, correctLevel: QRCode.CorrectLevel.M });
-    container.style.cursor = 'pointer';
-    container.title = 'Tap to open in wallet';
-    container.addEventListener('click', () => { window.location.href = 'lightning:' + lnurl; });
-
-    const btnOpenWallet = document.getElementById('btn-open-wallet');
-    btnOpenWallet.addEventListener('click', () => { window.location.href = 'lightning:' + lnurl; });
-
-    // Copy claim code
-    const lnurlEl = document.getElementById('redeem-lnurl-text');
-    lnurlEl.addEventListener('click', async function () {
-      try {
-        await navigator.clipboard.writeText(lnurl);
-        lnurlEl.textContent = 'Copied!';
-        setTimeout(() => { lnurlEl.textContent = 'Copy Claim Code'; }, 1500);
-      } catch {
-        prompt('Copy this LNURL:', lnurl);
-      }
-    });
-
-    // Wallet open button
-    attachWalletButton(lnurlEl, lnurl);
-
-    // ── Flip controls ────────────────────────────────────────────────────
-    const cardInner = document.getElementById('redeem-card-inner');
-    let pollInterval = null;
-
-    document.getElementById('btn-reveal-secret').addEventListener('click', function () {
-      cardInner.classList.add('flipped');
-      if (!pollInterval) pollInterval = startRedemptionPoll();
-    });
-
-    document.getElementById('btn-flip-back').addEventListener('click', function () {
-      cardInner.classList.remove('flipped');
-    });
-
-    // ── Sats info modal ──────────────────────────────────────────────────
-    document.getElementById('btn-sats-info').addEventListener('click', function () {
-      document.getElementById('sats-info-modal').classList.remove('hidden');
-    });
-    document.getElementById('sats-info-close').addEventListener('click', function () {
-      document.getElementById('sats-info-modal').classList.add('hidden');
-    });
-    document.getElementById('sats-info-modal').addEventListener('click', function (e) {
-      if (e.target === this) this.classList.add('hidden');
-    });
-
-    // ── Lightning Address / LNURL Pay ─────────────────────────────────────
-    document.getElementById('btn-lnaddr').addEventListener('click', function () {
-      const inp = document.getElementById('lnaddr-input');
-      if (!inp.value) {
-        const saved = localStorage.getItem('sn_refund_code') || '';
-        if (saved) inp.value = saved;
-      }
-      document.getElementById('lnaddr-modal').classList.remove('hidden');
-      inp.focus();
-    });
-    document.getElementById('lnaddr-close').addEventListener('click', function () {
-      document.getElementById('lnaddr-modal').classList.add('hidden');
-    });
-    document.getElementById('lnaddr-modal').addEventListener('click', function (e) {
-      if (e.target === this) this.classList.add('hidden');
-    });
-    document.getElementById('lnaddr-input').addEventListener('keydown', function (e) {
-      if (e.key === 'Enter') { e.preventDefault(); document.getElementById('lnaddr-submit').click(); }
-    });
-    document.getElementById('lnaddr-submit').addEventListener('click', async function () {
-      const input = document.getElementById('lnaddr-input').value.trim();
-      const statusEl = document.getElementById('lnaddr-status');
-      const submitBtn = document.getElementById('lnaddr-submit');
-      if (!input) {
-        statusEl.style.color = 'var(--text-muted)';
-        statusEl.textContent = 'Please enter a Lightning address or LNURL pay code.';
-        return;
-      }
-      submitBtn.disabled = true;
-      statusEl.style.color = 'var(--text-muted)';
-      try {
-        await window.redeemToLightningAddress({
-          serverURL, secret, balanceMsat: balance_msat, lnInput: input,
-          onStatus: msg => { statusEl.textContent = msg; },
-        });
-        document.getElementById('lnaddr-modal').classList.add('hidden');
-        const celEl = document.getElementById('redeem-celebration');
-        if (celEl) celEl.textContent = '\u26A1 Payment sent! Waiting for confirmation\u2026';
-        if (!pollInterval) pollInterval = startRedemptionPoll();
-        statusEl.textContent = '';
-        submitBtn.disabled = false;
-      } catch (err) {
-        statusEl.style.color = 'var(--red, #e05252)';
-        statusEl.textContent = err.message || 'Something went wrong. Please try again.';
-        submitBtn.disabled = false;
-      }
-    });
-
-    // ── Expiry countdown ─────────────────────────────────────────────────
-    if (hasExpiry) {
-      const countdownEl = document.getElementById('expiry-countdown');
-      let countdownTimer;
-      function updateCountdown() {
-        const secsLeft = expires_at - Math.floor(Date.now() / 1000);
-        if (secsLeft <= 0) {
-          clearInterval(countdownTimer);
-          const sticker = document.getElementById('redeem-sticker');
-          const revealBtn = document.getElementById('btn-reveal-secret');
-          const celEl = document.getElementById('redeem-celebration');
-          if (sticker) { sticker.textContent = 'EXPIRED'; sticker.className = 'hc-sticker hc-sticker-gray'; }
-          if (revealBtn) { revealBtn.disabled = true; revealBtn.style.opacity = '0.5'; }
-          if (celEl) celEl.textContent = 'This voucher has expired.';
-          if (countdownEl) countdownEl.textContent = '';
-          return;
-        }
-        const d = Math.floor(secsLeft / 86400);
-        const h = Math.floor((secsLeft % 86400) / 3600);
-        const m = Math.floor((secsLeft % 3600) / 60);
-        const s = secsLeft % 60;
-        const parts = [];
-        if (d > 0) parts.push(d + 'd');
-        parts.push(String(h).padStart(2, '0') + 'h');
-        parts.push(String(m).padStart(2, '0') + 'm');
-        parts.push(String(s).padStart(2, '0') + 's');
-        countdownEl.textContent = '⏳ Expires in ' + parts.join(' ');
-      }
-      updateCountdown();
-      countdownTimer = setInterval(updateCountdown, 1000);
-    }
-
-    // ── ZAR fiat conversion (non-blocking) ───────────────────────────────
-    (async function fetchFiat() {
-      const fiatEl = document.getElementById('redeem-fiat-value');
-      if (!fiatEl) return;
-      try {
-        const r = await fetch(
-          'https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=zar'
-        );
-        if (!r.ok) return;
-        const data = await r.json();
-        const zarPerBtc = data && data.bitcoin && data.bitcoin.zar;
-        if (!zarPerBtc) return;
-        const zarValue = (sats / 100000000) * zarPerBtc;
-        if (zarValue < 0.01) return;
-        fiatEl.textContent = '≈ R' + zarValue.toLocaleString('en-ZA', {
-          minimumFractionDigits: 2, maximumFractionDigits: 2
-        });
-      } catch { /* silently ignore */ }
-    })();
-
-    // ── Poll for redemption — starts when SHOW VOUCHER is tapped ────────
-    function startRedemptionPoll() {
-      return setInterval(async function () {
-        try {
-          const pk = await secretToPubKey(secret);
-          const r = await fetch(serverURL + '/status', {
-            method: 'POST', headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ pubkeys: [pk] }),
-          });
-          if (!r.ok) return;
-          const s = (await r.json())[pk];
-          if (s.active) return;
-          clearInterval(pollInterval);
-          pollInterval = null;
-          // Flip back to front
-          cardInner.classList.remove('flipped');
-          const sticker = document.getElementById('redeem-sticker');
-          const revealBtn = document.getElementById('btn-reveal-secret');
-          const celEl = document.getElementById('redeem-celebration');
-          if (s.refunded) {
-            if (sticker) { sticker.textContent = 'EXPIRED'; sticker.className = 'hc-sticker hc-sticker-gray'; }
-            if (celEl) celEl.textContent = 'This voucher has expired.';
-          } else {
-            if (sticker) { sticker.textContent = 'REDEEMED'; sticker.className = 'hc-sticker hc-sticker-green'; }
-            if (celEl) celEl.textContent = '✓ Claimed successfully!';
-            const blinkDetails = document.getElementById('details-blink');
-            const spendDetails = document.getElementById('details-spend');
-            if (blinkDetails) blinkDetails.removeAttribute('open');
-            if (spendDetails) spendDetails.setAttribute('open', '');
-          }
-          if (revealBtn) { revealBtn.disabled = true; revealBtn.style.opacity = '0.5'; }
-        } catch { /* silently ignore network errors */ }
-      }, 12000);
-    }
+  <script src="/js/config.js"></script>
+  <script src="/js/i18n-runtime.js?v=76"></script>
+  <script src="/js/qrcode.min.js"></script>
+  <script src="/js/decode-lnurl.js?v=77"></script>
+  <script src="/js/wallet-picker.js?v=77"></script>
+  <script src="/js/lnaddr-redeem.js?v=77"></script>
+  <script src="/js/redeem-main.js?v=77"></script>
+<script>
+window.snInitL10n().then(function (b) {
+  window.snL10nDict = b.dict;
+  window.snL10nT = b.t;
+  if (typeof window.applyDomI18n === 'function') {
+    window.applyDomI18n(document, b.dict || {});
   }
-
-  init();
-
-  // ── Wallet tab switching ──────────────────────────────────────────────────
-  document.addEventListener('click', function (e) {
-    const btn = e.target.closest('[data-tab]');
-    if (!btn) return;
-    const tabsEl = btn.closest('#wallet-tabs');
-    if (!tabsEl) return;
-    const card = tabsEl.closest('.card, .faq-answer');
-    tabsEl.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
-    btn.classList.add('active');
-    card.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
-    const pane = card.querySelector('#tab-' + btn.dataset.tab);
-    if (pane) pane.classList.add('active');
-  });
-
-})();
+  if (typeof window.snRedeemMain === 'function') {
+    window.snRedeemMain();
+  }
+});
 </script>
 </body>
 </html>
