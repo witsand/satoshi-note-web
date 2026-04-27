@@ -3,19 +3,19 @@
     "text": "Eis Jou Koepon"
   },
   "redeem.meta.description": {
-    "content": "Jy het 'n Bitcoin Lightning-koepon ontvang. Eis dit nou met 'n Lightning-beursie."
+    "content": "Jy het 'n Bitcoin Lightning-koepon ontvang. Eis dit dadelik met 'n Lightning-beursie."
   },
   "redeem.meta.ogTitle": {
     "text": "Jy het Bitcoin ontvang! ⚡"
   },
   "redeem.meta.ogDescription": {
-    "text": "Iemand het vir jou 'n Lightning-koepon gestuur. Eis dit nou met 'n Bitcoin-beursie — geen rekening nodig nie."
+    "text": "Iemand het vir jou 'n Lightning-koepon gestuur. Eis dit dadelik met 'n Bitcoin-beursie — geen rekening nodig nie."
   },
   "redeem.meta.titleWithApp": {
     "text": "Eis jou koepon —"
   },
   "redeem.header.giftLink": {
-    "text": "Skep nuwe koepon →"
+    "text": "Skenk Bitcoin →"
   },
   "redeem.serverNotice.prefix": {
     "text": "⚡ Koepon van "
@@ -27,7 +27,7 @@
     "text": "Stuur na Lightning-adres"
   },
   "redeem.modal.lnaddr.body": {
-    "text": "Tik 'n Lightning-adres of LNURL-betalingskode in om die sats direk na jou beursie te stuur."
+    "text": "Voer 'n Lightning-adres of LNURL-betalingskode in om die sats direk na jou beursie te ontvang."
   },
   "redeem.modal.lnaddr.input": {
     "placeholder": "gebruiker@domein.com  of  LNURL1…"
@@ -54,16 +54,16 @@
     "html": "<strong style=\"color:var(--text);\">Kry 'n Bitcoin-beursie</strong> — laai Blink (aanbeveel vir beginners) van die App Store of Play Store af."
   },
   "redeem.modal.sats.li2": {
-    "html": "<strong style=\"color:var(--text);\">Druk op \"Wys koepon\"</strong> op hierdie blad om die QR-kode te wys."
+    "html": "<strong style=\"color:var(--text);\">Tik \"Wys koepon\"</strong> op hierdie blad om die QR-kode te wys."
   },
   "redeem.modal.sats.li3": {
-    "html": "<strong style=\"color:var(--text);\">Skandeer of kopieer die QR-kode</strong> met jou beursie-toep om die sats te ontvang."
+    "html": "<strong style=\"color:var(--text);\">Skandeer of tik die QR-kode</strong> in jou beursie-app om die sats te ontvang."
   },
   "redeem.modal.sats.doTitle": {
     "text": "Wat kan ek daarmee doen?"
   },
   "redeem.modal.sats.doBody": {
-    "text": "Bestee by duisende handelaars, betaal rekeninge, stuur na vriende, of hou as spaargeld.\nVerwys na die beursiegids hieronder vir meer besonderhede."
+    "text": "Bestee by duisende handelaars, betaal rekeninge, stuur na vriende, of hou as spaargeld.\nSien die beursiegids hieronder vir meer besonderhede."
   },
   "redeem.modal.sats.gotIt": {
     "text": "Ek verstaan"
@@ -78,13 +78,13 @@
     "text": "GEËIS"
   },
   "redeem.sticker.notFunded": {
-    "text": "NIE BEFONDS"
+    "text": "NIE BEFONDS NIE"
   },
   "redeem.sticker.voucher": {
     "text": "KOEPON"
   },
   "redeem.state.invalidTitle": {
-    "text": "Hierdie skakel is ongeldig"
+    "text": "Hierdie skakel is nie geldig nie"
   },
   "redeem.state.invalidDesc": {
     "text": "Gaan die skakel na of kontak die sender."
@@ -93,7 +93,7 @@
     "text": "Koepon het verval"
   },
   "redeem.state.expiredDesc": {
-    "text": "Hierdie koepon het verval voordat dit geëis is. Vra die sender vir 'n nuwe een."
+    "text": "Hierdie koepon het verval voordat dit geëis is. Vra die sender om 'n nuwe een."
   },
   "redeem.state.redeemedTitle": {
     "text": "Reeds geëis"
@@ -105,10 +105,10 @@
     "text": "Nog nie befonds nie"
   },
   "redeem.state.unfundedDesc": {
-    "text": "Hierdie koepon is nog nie met Bitcoin gelaai nie. Probeer weer later, nadat die sender dit gelaai het."
+    "text": "Hierdie koepon is nog nie met Bitcoin gelaai nie. Kom later terug sodra die sender dit gelaai het."
   },
   "redeem.state.checkAgain": {
-    "text": "Probeer weer"
+    "text": "Gaan weer na"
   },
   "redeem.celebration.0": {
     "text": "Iemand het vir jou Bitcoin gestuur!"
@@ -123,10 +123,10 @@
     "text": "Sats op pad!"
   },
   "redeem.celebration.4": {
-    "text": "'n Bitcoin-geskenk vir jou!"
+    "text": "Bitcoin as geskenk!"
   },
   "redeem.celebration.5": {
-    "text": "Jou Bitcoin wag!"
+    "text": "Jou koepon wag!"
   },
   "redeem.funded.satsSuffix": {
     "text": " sats"
@@ -138,10 +138,10 @@
     "text": "WYS KOEPON"
   },
   "redeem.back.qrHint": {
-    "text": "Druk of skandeer die QR-kode om te eis"
+    "text": "Tik of skandeer die QR-kode om te eis"
   },
   "redeem.btn.openWallet": {
-    "text": "Stuur na beursie"
+    "text": "Maak in beursie oop"
   },
   "redeem.word.or": {
     "text": "of"
@@ -153,7 +153,7 @@
     "text": "Gekopieer!"
   },
   "redeem.qr.tapTitle": {
-    "text": "Druk hier om in jou Bitcoin-beursie oop te maak"
+    "text": "Tik om in beursie oop te maak"
   },
   "redeem.btn.flipBackTitle": {
     "title": "Terug na koepon"
@@ -174,7 +174,7 @@
     "text": "⚡ Betaling gestuur! Wag vir bevestiging…"
   },
   "redeem.lnaddr.emptyError": {
-    "text": "Tik asseblief 'n Lightning-adres of LNURL-betalingskode in."
+    "text": "Voer asseblief 'n Lightning-adres of LNURL-betalingskode in."
   },
   "redeem.lnaddr.genericError": {
     "text": "Iets het skeefgeloop. Probeer asseblief weer."
@@ -204,13 +204,13 @@
     "text": "Leer meer"
   },
   "redeem.info.gettingStarted": {
-    "text": "🟠 Kry eers 'n Bitcoin-beursie"
+    "text": "🟠 Aan die gang"
   },
   "redeem.info.spending": {
-    "text": "🟠 Spandeer Bitcoin"
+    "text": "🟠 Bitcoin bestee"
   },
   "redeem.info.buying": {
-    "text": "🟠 Koop en verkoop Bitcoin vir rande"
+    "text": "🟠 Rand en Bitcoin koop en verkoop"
   },
   "redeem.info.selfCustody": {
     "text": "🟠 Self-bewaring en privaatheid"
@@ -228,19 +228,19 @@
     "text": "Waar kan ek Bitcoin in Suid-Afrika bestee?"
   },
   "redeem.faq.spend.lead": {
-    "text": "Gebruik Bitcoin oral — plaaslike markte, groot winkels, geskenkkaarte en onmiddellike, wêreldwye betalings."
+    "text": "Gebruik Bitcoin oral — plaaslike markte, groot winkels, geskenkkaarte en kits wêreldwye betalings."
   },
   "redeem.faq.spend.circlesTitle": {
     "html": "Bitcoin sirkulêre ekonomieë in SA"
   },
   "redeem.faq.spend.circlesBody": {
-    "html": "Hele gemeenskappe waar jy op Bitcoin kan leef:\n                  <strong>Witsand</strong>,\n                  <strong>Mosselbaai</strong> (<a href=\"https://bitcoinekasi.com\" target=\"_blank\" rel=\"noopener\">bitcoinekasi.com</a>),\n                  <strong>Plettenbergbaai</strong> (<a href=\"https://bitcoinplett.cx\" target=\"_blank\" rel=\"noopener\">bitcoinplett.cx</a>),\n                  <strong>De Rust</strong>,\n                  <strong>Sedgefield</strong>,\n                  <strong>Stellenbosch</strong>,\n                  en <strong>Knysna</strong>.\n                  <br>Almal het gereelde plaaslike Bitcoin-saamtrekke."
+    "html": "<strong>Orania</strong> (<a href=\"https://kaart.bitcoinorania.co.za\" target=\"_blank\" rel=\"noopener\">kaart.bitcoinorania.co.za</a>)<br><br>Hele gemeenskappe waar jy op Bitcoin kan leef:\n                  <strong>Witsand</strong>,\n                  <strong>Mosselbaai</strong> (<a href=\"https://bitcoinekasi.com\" target=\"_blank\" rel=\"noopener\">bitcoinekasi.com</a>),\n                  <strong>Plettenbergbaai</strong> (<a href=\"https://bitcoinplett.cx\" target=\"_blank\" rel=\"noopener\">bitcoinplett.cx</a>),\n                  <strong>De Rust</strong>,\n                  <strong>Sedgefield</strong>,\n                  <strong>Stellenbosch</strong>,\n                  en <strong>Knysna</strong>.\n                  <br>Almal het gereelde plaaslike byeenkomste."
   },
   "redeem.faq.spend.mapTitle": {
     "text": "Vind nabygeleë handelaars"
   },
   "redeem.faq.spend.mapBody": {
-    "html": "<a href=\"https://btcmap.org\" target=\"_blank\" rel=\"noopener\">BTCMap.org</a> en die\n                  <a href=\"https://goo.gl/maps/tKHJVbVzEuBQd7F8A\" target=\"_blank\" rel=\"noopener\">Money Badger-kaart</a>\n                  wys duisende besighede wat Bitcoin aanvaar, van regoor Suid-Afrika."
+    "html": "<a href=\"https://btcmap.org\" target=\"_blank\" rel=\"noopener\">BTCMap.org</a> en die\n                  <a href=\"https://goo.gl/maps/tKHJVbVzEuBQd7F8A\" target=\"_blank\" rel=\"noopener\">Money Badger-kaart</a>\n                  wys duisende Bitcoin-aanvaarende besighede regoor Suid-Afrika."
   },
   "redeem.faq.spend.zapperTitle": {
     "text": "Zapper- en Scan to Pay-handelaars"
@@ -249,16 +249,16 @@
     "html": "Betaal by enige winkel wat Zapper of Scan to Pay aanvaar — insluitend\n                  Pick &amp; Pay, Dis-Chem, Clicks, Engen, Shell, Total, Wimpy en vele meer."
   },
   "redeem.faq.spend.giftTitle": {
-    "html": "Geskenkkaarte en <em>top-ups</em>"
+    "text": "Geskenkkaarte en top-ups"
   },
   "redeem.faq.spend.giftBody": {
-    "html": "Koop geskenkkaarte vir honderde wêreldwye handelsmerke by\n                  <a href=\"https://bitrefill.com\" target=\"_blank\" rel=\"noopener\">Bitrefill.com</a> —\n                  Netflix, Amazon, Uber, lugtyd-<em>top-ups</em> en meer."
+    "html": "Koop geskenkkaarte vir honderde wêreldwye handelsmerke by\n                  <a href=\"https://bitrefill.com\" target=\"_blank\" rel=\"noopener\">Bitrefill.com</a> —\n                  Netflix, Amazon, Uber, lugtyd-top-ups en meer."
   },
   "redeem.faq.spend.meetupsTitle": {
-    "text": "Bitcoin-saamtrekke"
+    "text": "Bitcoin-byeenkomste"
   },
   "redeem.faq.spend.meetupsBody": {
-    "html": "Daar is aktiewe gemeenskappe van Kaapstad tot Pretoria en Johannesburg.\n                  Vind geleenthede en datums op Twitter/X — soek vir plaaslike Bitcoin-groepe in jou dorp."
+    "html": "Aktiewe gemeenskappe in Kaapstad, Pretoria en Johannesburg.\n                  Vind geleenthede en datums op Twitter/X — soek na plaaslike Bitcoin-groepe in jou stad."
   },
   "redeem.faq.spend.instantTitle": {
     "text": "Stuur dadelik na enigiemand"
@@ -270,7 +270,7 @@
     "text": "Waar kan ek Bitcoin in Suid-Afrika koop?"
   },
   "redeem.faq.buyZa.a": {
-    "html": "Jy kan Bitcoin koop met dienste soos <strong>54052.co.za</strong>, wat jou met bankoordrag laat betaal en Bitcoin direk na jou beursie laat ontvang.\n            Kies 'n diens wat eenvoudig en betroubaar is en jou in staat stel om jou Bitcoin direk na jou eie beursie te laat onttrek."
+    "html": "Jy kan Bitcoin koop met dienste soos <strong>54052.co.za</strong>, wat jou met ETF laat betaal en Bitcoin direk na jou beursie laat ontvang.\n            Kies 'n diens wat eenvoudig en betroubaar is en jou na jou eie beursie laat onttrek."
   },
   "redeem.faq.bankZa.q": {
     "text": "Hoe stuur ek Bitcoin na 'n Suid-Afrikaanse bankrekening?"
@@ -282,31 +282,31 @@
     "text": "Hoekom moet ek my eie beursie gebruik en omgee oor privaatheid?"
   },
   "redeem.faq.privacy.a": {
-    "html": "Wanneer jou Bitcoin by 'n beurs lē, beheer jy dit nie — die beurs doen. Rekeninge kan gevries, beperk of verloor word weens kuberaanvalle (\"hacks\") of ander probleme.<br><br>\n\n            Die meeste beurse vereis ook KYC (identiteitsverifikasie), wat jou regeringsidentiteit aan jou Bitcoin-aktiwiteit koppel. Dit skep 'n permanente rekord van jou transaksies en verminder jou finansiële privaatheid.<br><br>\n\n            <strong>\"Nie jou sleutels, nie jou Bitcoin.\"</strong> Om jou eie beursie te gebruik gee jou volle beheer oor jou geld en help om jou privaatheid te beskerm. Behandel dit soos kontant — as jy dit besit, hou dit by jou."
+    "html": "Wanneer jou Bitcoin op 'n beurs is, beheer jy dit nie — die beurs doen. Rekeninge kan gevries, beperk of verloor word weens hacks of ander probleme.<br><br>\n\n            Meeste beurse vereis ook KYC (identiteitsverifikasie), wat jou werklike identiteit aan jou Bitcoin-aktiwiteit koppel. Dit skep 'n permanente rekord van jou transaksies en verminder jou finansiële privaatheid.<br><br>\n\n            <strong>\"Nie jou sleutels, nie jou munte nie.\"</strong> Om jou eie beursie te gebruik gee jou volle beheer oor jou geld en help om jou privaatheid te beskerm. Behandel dit soos kontant — sodra jy dit besit, hou dit by jou."
   },
   "redeem.faq.crypto.q": {
-    "text": "Wat is die verskil tussen Bitcoin en ander kriptogeldeenhede (\"crypto\")?"
+    "text": "Wat is die verskil tussen Bitcoin en crypto?"
   },
   "redeem.faq.crypto.a": {
-    "html": "<strong>Bitcoin</strong> is gedesentraliseerde geld — geen stigters, geen maatskappy, geen sentrale beheer nie. Die reëls is rotsvas en word deur 'n wêreldwye netwerk afgedwing. Dit is ontwerp om vertroue met neutrale wiskunde te vervang en individue volle beheer oor hul geld te gee.<br><br>\n\n            <strong>\"Crypto\"</strong> is alles behalwe — projekte met stigters, spanne en binnekringe wat die reëls kan verander, die toevoer kan beïnvloed, en voorkeure geniet. Dit maak dit maklik om te manipuleer en ongeskik vir gebruik as geld.<br><br>\n\n            Die meeste kripto-projekte los nie die kernprobleem van fiat geld — naamlik <strong>beheer</strong> — op nie. Hulle skuif daardie beheer bloot van regerings na maatskappye of klein groepe mense.<br><br>\n\n            Die tegnologieë kan interessant wees, maar dit kan op Bitcoin gebou word, sonder die nut vir afsonderlike geldeenhede. Die geldeenhede self is gewoonlik onnodig en bestaan hoofsaaklik om binnekringe te verryk.<br><br>\n\n            Geld word gedryf deur netwerkeffekte — mense konvergeer op een standaard. Ons siening is eenvoudig: <strong>Bitcoin is geld. \"Crypto\" is nie.</strong> Om ons gemeenskap veilig te hou, fokus ons slegs op Bitcoin en vermy ons kriptogeldeenhede heeltemal."
+    "html": "<strong>Bitcoin</strong> is gedesentraliseerde geld — geen stigters, geen maatskappy, geen sentrale beheer nie. Die reëls is vas en word deur 'n globale netwerk afgedwing. Dit is ontwerp om vertroue te verwyder en individue volle beheer oor hul geld te gee.<br><br>\n\n            <strong>\"Crypto\"</strong> is alles anders — projekte met stigters, spanne en insiders wat die reëls kan verander, die aanbod kan beïnvloed, en vroeg kan baat. Dit maak dit maklik om te manipuleer en ongeskik as geld.<br><br>\n\n            Die meeste crypto-projekte los nie die kernprobleem van fiat (naamlik <strong>beheer</strong>) op nie. Hulle skuif daardie beheer bloot van regerings na maatskappye of klein groepe.<br><br>\n\n            Die tegnologieë kan interessant wees, maar dit is oopbron en kan op Bitcoin gebou word sonder dat afsonderlike tokens nodig is. Die tokens self is gewoonlik onnodig en bestaan om insiders te verryk.<br><br>\n\n            Geld word gedryf deur netwerkeffekte — mense konvergeer op een standaard. Ons siening is eenvoudig: <strong>Bitcoin is geld. Crypto is nie.</strong> Om ons gemeenskap veilig te hou, fokus ons slegs op Bitcoin en vermy crypto heeltemal."
   },
   "redeem.faq.lightning.q": {
-    "text": "Hoekom gebruik Sendsats slegs Lightning-transaksies?"
+    "text": "Hoekom ondersteun hierdie platform net Lightning?"
   },
   "redeem.faq.lightning.a": {
-    "html": "Lightning is Bitcoin se betaalmetode. Dit laat kits transaksies toe, byna geen fooie, en werk wêreldwyd in sekondes.<br><br>\n\n            Transaksies direk op die Bitcoin-blokketting (<em>blockchain</em>) is stadiger en duurder — beter geskik vir spaar. Lightning maak Bitcoin prakties vir alledaagse betalings soos om klein bedrae te stuur of om in winkels mee te betaal.<br><br>\n\n            Hierdie platform gebruik Lightning om die stuur van Bitcoin eenvoudig, vinnig en toeganklik vir almal te maak."
+    "html": "Lightning is Bitcoin se betaallaag. Dit laat kits transaksies toe, byna geen fooie, en werk wêreldwyd in sekondes.<br><br>\n\n            Ketting-Bitcoin is stadiger en duurder — beter geskik vir spaar. Lightning maak Bitcoin prakties vir alledaagse betalings soos om klein bedrae te stuur of in winkels te betaal.<br><br>\n\n            Hierdie platform gebruik Lightning om Bitcoin-stuur eenvoudig, vinnig en toeganklik vir enigiemand te maak."
   },
   "Invalid bech32": {
     "text": "Ongeldige bech32"
   },
   "Invalid bech32 char": {
-    "text": "Ongeldige bech32-karakter"
+    "text": "Ongeldige bech32-teken"
   },
   "Invalid format. Use user@domain.com or a LNURL1… code.": {
     "text": "Ongeldige formaat. Gebruik gebruiker@domein.com of 'n LNURL1…-kode."
   },
   "Fetching payment details…": {
-    "text": "Soek betaalbesonderhede op…"
+    "text": "Haal betaalbesonderhede…"
   },
   "Could not reach payment endpoint": {
     "text": "Kon nie die betaalpunt bereik nie"
@@ -324,7 +324,7 @@
     "text": "Vra faktuur aan…"
   },
   "Failed to get invoice from payment endpoint": {
-    "text": "Kon nie faktuur vanaf betaalpunt kry nie"
+    "text": "Kon nie faktuur van betaalpunt kry nie"
   },
   "Invoice error": {
     "text": "Faktuurfout"
@@ -336,7 +336,7 @@
     "text": "Dien in by koeponbediener…"
   },
   "Failed to fetch voucher details": {
-    "text": "Kon nie koeponbesonderhede opsoek nie"
+    "text": "Kon nie koeponbesonderhede kry nie"
   },
   "Voucher error": {
     "text": "Koeponfout"
@@ -348,12 +348,12 @@
     "text": "Bediener het die versoek geweier"
   },
   "redeem.faq.blink.summary": {
-    "html": "Laai \"Blink (Bitcoin Wallet)\" af <span style=\"background:var(--orange);color:#000;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.3px;\">Aanbeveel</span>"
+    "html": "Laai \"Blink (Bitcoin-beursie)\" af <span style=\"background:var(--orange);color:#000;font-size:0.68rem;font-weight:700;padding:2px 8px;border-radius:10px;letter-spacing:0.3px;\">Aanbeveel</span>"
   },
   "redeem.faq.blink.answer": {
-    "html": "<p style=\"font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;\">✅ Perfek vir beginners. Maklik om mee aan die gang te kom. Beveilig deur jou selfoonnommer.</p>\n            <p class=\"section-label\">Eerste stappe</p>\n            <ol class=\"steps-list\">\n              <li>\n                <strong>Laai <a class=\"wallet-link\" href=\"https://blink.sv\" target=\"_blank\" rel=\"noopener\">Blink</a> af</strong>\n                Van die Play Store, GitHub, of App Store.\n                <div class=\"wallet-card-links\" style=\"margin-bottom:10px;\">\n                  <a class=\"wallet-link\" href=\"https://play.google.com/store/apps/details?id=com.galoyapp\" target=\"_blank\" rel=\"noopener\">Play Store</a>\n                  <a class=\"wallet-link\" href=\"https://github.com/blinkbitcoin/blink-mobile/releases/latest\" target=\"_blank\" rel=\"noopener\">APK</a>\n                  <a class=\"wallet-link\" href=\"https://apps.apple.com/us/app/blink-bitcoin-wallet/id1531383905\" target=\"_blank\" rel=\"noopener\">App Store</a>\n                </div>\n              </li>\n              <li><strong>Maak die toep oop</strong> Kies \"Create new account\" → \"Accept\"</li>\n              <li><strong>Registreer (opsioneel)</strong> \"SMS\" → \"Use SMS\" → Tik jou selfoonnommer in → Druk op \"Send via SMS\". Dit is jou rugsteun. Bevestig die 6-syfer kode.</li>\n              <li><strong>Eis jou Bitcoin</strong> Druk op die QR-kode hierbo. Dit sal Blink oopmaak en jou toelaat om jou bitcoin te eis ⚡</li>\n            </ol>"
+    "html": "<p style=\"font-size:0.8rem;color:var(--text-muted);margin-bottom:10px;\">✅ Uitstekend vir beginners. Min opstel, vinnig aan die gang. Jou foonnommer is jou rugsteun.</p>\n            <p class=\"section-label\">Stappe om te begin</p>\n            <ol class=\"steps-list\">\n              <li>\n                <strong>Laai <a class=\"wallet-link\" href=\"https://blink.sv\" target=\"_blank\" rel=\"noopener\">blink.sv</a> af</strong>\n                Van die Play Store, GitHub, of App Store.\n                <div class=\"wallet-card-links\" style=\"margin-bottom:10px;\">\n                  <a class=\"wallet-link\" href=\"https://play.google.com/store/apps/details?id=com.galoyapp\" target=\"_blank\" rel=\"noopener\">Play Store</a>\n                  <a class=\"wallet-link\" href=\"https://github.com/blinkbitcoin/blink-mobile/releases/latest\" target=\"_blank\" rel=\"noopener\">APK</a>\n                  <a class=\"wallet-link\" href=\"https://apps.apple.com/us/app/blink-bitcoin-wallet/id1531383905\" target=\"_blank\" rel=\"noopener\">App Store</a>\n                </div>\n              </li>\n              <li><strong>Maak die app oop</strong> Tik \"Skep nuwe rekening\" -&gt; \"Aanvaar\"</li>\n              <li><strong>Voer jou foonnommer in (opsioneel)</strong> \"SMS\" -&gt; \"Gebruik SMS\" -&gt; Voer nommer in -&gt; Tik \"Stuur per SMS\". Dit is jou rugsteun. Bevestig die 6-syfer kode.</li>\n              <li><strong>Kom hier terug</strong> Tik die QR-kode hierbo. Dit sal Blink oopmaak en jou laat om die bitcoin te eis ⚡</li>\n            </ol>"
   },
   "Redemption failed": {
-    "text": "Eis het misluk"
+    "text": "Eising het misluk"
   }
 }
